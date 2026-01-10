@@ -1,0 +1,3091 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Controllers",
+    "version": "1.0"
+  },
+  "paths": {
+    "/api/admin/brand/list": {
+      "get": {
+        "tags": [
+          "BrandContloller"
+        ],
+        "summary": "Retrieve a paginated, searchable, and sortable list of fuel station brands.",
+        "description": "Returns a list of fuel station brands (e.g. Orlen, BP, Shell) with support for **search**, **sorting**, and **pagination**.  \r\nUseful for managing brand lists in the administration panel.\r\n            \r\nExample request  \r\n```http\r\nGET /api/admin/brand/list?Search=Orlen&pageNumber=1&pageSize=10&sortBy=name&sortDirection=asc\r\n```\r\n            \r\nExample response — Successful update  \r\n```json\r\n{\r\n  \"success\": true,\r\n  \"message\": \"Brand Orlen (LPG) edited successfull\",\r\n  \"data\": true\r\n}\r\n```\r\n            \r\nExample response — Validation error  \r\n```json\r\n{\r\n  \"success\": false,\r\n  \"message\": \"Validation error\",\r\n  \"errors\": [ \"NewName is null, empty or whitespace\" ],\r\n  \"data\": false\r\n}\r\n```\r\n            \r\nExample response — Brand not found  \r\n```json\r\n{\r\n  \"success\": false,\r\n  \"message\": \"Server error\",\r\n  \"errors\": [ \"Cannot edit Brand\" ],\r\n  \"data\": false\r\n}\r\n```\r\n            \r\nNotes  \r\n- `oldName` — required path parameter; current name of the brand.  \r\n- `newName` — required query parameter; new name to replace the old one.  \r\n- Updates the `UpdatedAt` timestamp automatically.  \r\n- Returns `true` if the brand was successfully updated.",
+        "parameters": [
+          {
+            "name": "PageNumber",
+            "in": "query",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "SortBy",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "SortDirection",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Brand successfully updated"
+          },
+          "400": {
+            "description": "Validation error (missing or invalid parameters)"
+          },
+          "404": {
+            "description": "Brand not found"
+          },
+          "500": {
+            "description": "Server error during update"
+          }
+        }
+      }
+    },
+    "/api/admin/brand/edit/{oldName}": {
+      "patch": {
+        "tags": [
+          "BrandContloller"
+        ],
+        "summary": "Edit the name of an existing fuel station brand.",
+        "description": "Description:  \r\nUpdates the name of a fuel station brand based on its current name (`oldName`).  \r\nThe new name must be provided as a query parameter (`newName`).  \r\nThis endpoint is used for administrative updates of brand identifiers.\r\n            \r\nExample request  \r\n```http\r\nPUT /api/admin/brand/edit/Orlen%20(LPG)?newName=Orlen%20(Main%20Station)\r\n```\r\n            \r\nExample response — Successful update  \r\n```json\r\n{\r\n  \"success\": true,\r\n  \"message\": \"Brand Orlen (LPG) edited successfull\",\r\n  \"data\": true\r\n}\r\n```\r\n            \r\nExample response — Validation error  \r\n```json\r\n{\r\n  \"success\": false,\r\n  \"message\": \"Validation error\",\r\n  \"errors\": [ \"NewName is null, empty or whitespace\" ],\r\n  \"data\": false\r\n}\r\n```\r\n            \r\nExample response — Brand not found  \r\n```json\r\n{\r\n  \"success\": false,\r\n  \"message\": \"Server error\",\r\n  \"errors\": [ \"Cannot edit Brand\" ],\r\n  \"data\": false\r\n}\r\n```\r\n            \r\nNotes  \r\n- `oldName` — required path parameter; current name of the brand.  \r\n- `newName` — required query parameter; new name to replace the old one.  \r\n- Updates the `UpdatedAt` timestamp automatically.  \r\n- Returns `true` if the brand was successfully updated.",
+        "parameters": [
+          {
+            "name": "oldName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "newName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Brand successfully updated"
+          },
+          "400": {
+            "description": "Validation error (missing or invalid parameters)"
+          },
+          "404": {
+            "description": "Brand not found"
+          },
+          "409": {
+            "description": "Conflict"
+          },
+          "500": {
+            "description": "Server error during update"
+          }
+        }
+      }
+    },
+    "/api/admin/brand/add": {
+      "post": {
+        "tags": [
+          "BrandContloller"
+        ],
+        "summary": "Add a new fuel brand.",
+        "description": "Description: Creates a new fuel brand entry in the database.  \r\nThe request must contain a brand name, which will be validated to ensure it’s not null or empty.\r\n            \r\nExample request (JSON)\r\n```http\r\nPOST /api/admin/brand/add\r\nContent-Type: application/json\r\n            \r\n{\r\n  \"name\": \"Orlen\"\r\n}\r\n```\r\n            \r\nExample request (form-data)\r\n```http\r\nPOST /api/admin/brand/add\r\nContent-Type: multipart/form-data\r\n            \r\nname=Orlen\r\n```\r\n            \r\nExample response (success)\r\n```json\r\n{\r\n  \"success\": true,\r\n  \"message\": \"Brand Orlen add successful\",\r\n  \"data\": true\r\n}\r\n```\r\n            \r\nExample response (validation error)\r\n```json\r\n{\r\n  \"success\": false,\r\n  \"message\": \"Validation error\",\r\n  \"errors\": [ \"Name is null, empty or whitespace\" ],\r\n  \"data\": false\r\n}\r\n```\r\n            \r\nNotes:\r\n- The brand name must be unique (case-insensitive).\r\n- The `CreatedAt` and `UpdatedAt` timestamps are automatically assigned by the server.\r\n- Only users with the **Admin** role can access this endpoint.",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              },
+              "encoding": {
+                "name": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Brand successfully added."
+          },
+          "400": {
+            "description": "Validation error – brand name is invalid or empty."
+          },
+          "401": {
+            "description": "Unauthorized – missing or invalid JWT token."
+          },
+          "403": {
+            "description": "Forbidden – user does not have permission to add brands."
+          },
+          "409": {
+            "description": "Conflict"
+          },
+          "500": {
+            "description": "Internal server error while processing the request."
+          }
+        }
+      }
+    },
+    "/api/admin/brand/{name}": {
+      "delete": {
+        "tags": [
+          "BrandContloller"
+        ],
+        "summary": "Delete a fuel station brand by its name.",
+        "description": " Description:  \r\n Permanently removes a fuel station brand from the system.  \r\n Deleting a brand will also delete all associated **stations** and their related data (fuel prices, proposals, etc.),  \r\n due to cascade delete rules in the database.\r\n\r\n Example request  \r\n ```http\r\n DELETE /api/admin/brand/Orlen\r\n ```\r\n\r\n Example response — Successful deletion  \r\n ```json\r\n {\r\n   \"success\": true,\r\n   \"message\": \"Brand Orlen delete successfull\",\r\n   \"data\": true\r\n }\r\n ```\r\n\r\n Example response — Brand not found  \r\n ```json\r\n {\r\n   \"success\": false,\r\n   \"message\": \"Appliaction Error\",\r\n   \"errors\": [\"Brand not found\"],\r\n   \"data\": false\r\n }\r\n ```\r\n\r\n Example response — Validation error  \r\n ```json\r\n {\r\n   \"success\": false,\r\n   \"message\": \"Valiadtion error\",\r\n   \"errors\": [\"Name is null, empyt white space\"],\r\n   \"data\": false\r\n }\r\n ```\r\n]\r\n Notes  \r\n - This operation is **irreversible**.  \r\n - Make sure the brand name is spelled exactly as stored in the system.  \r\n - Cascade deletion will remove all related stations and fuel data.",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "Name of the brand to delete.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Brand deleted successfully."
+          },
+          "400": {
+            "description": "Validation error — brand name was empty or invalid."
+          },
+          "404": {
+            "description": "Brand not found in the system."
+          },
+          "500": {
+            "description": "Unexpected server error occurred while deleting the brand."
+          }
+        }
+      }
+    },
+    "/api/admin/fuel-type/list": {
+      "get": {
+        "tags": [
+          "FuelType"
+        ],
+        "summary": "Retrieve a paginated, searchable, and sortable list of fuel types.",
+        "description": "Returns a list of fuel types (e.g. PB95, PB98, ON, LPG, E85) with support for **search**, **sorting**, and **pagination**.  \r\nThis endpoint is used in the administration panel to manage available fuel types.\r\n            \r\nExample request  \r\n```http\r\nGET /api/admin/fuel-type/list?pageNumber=1&pageSize=10&search=PB&sortBy=name&sortDirection=asc\r\n```\r\n            \r\nExample response — Successful retrieval  \r\n```json\r\n{\r\n  \"items\": [\r\n    {\r\n      \"name\": \"E85\",\r\n      \"code\": \"E85\",\r\n      \"createdAt\": \"2025-11-09T19:38:47.253332Z\",\r\n      \"updatedAt\": \"0001-01-01T00:00:00\"\r\n    },\r\n    {\r\n      \"name\": \"LPG\",\r\n      \"code\": \"LPG\",\r\n      \"createdAt\": \"2025-11-09T19:38:47.249874Z\",\r\n      \"updatedAt\": \"0001-01-01T00:00:00\"\r\n    }\r\n  ],\r\n  \"pageNumber\": 1,\r\n  \"pageSize\": 10,\r\n  \"totalCount\": 5,\r\n  \"totalPages\": 1,\r\n  \"hasPreviousPage\": false,\r\n  \"hasNextPage\": false\r\n}\r\n```\r\n            \r\nExample response — No results found  \r\n```json\r\n{\r\n  \"items\": [],\r\n  \"pageNumber\": 1,\r\n  \"pageSize\": 10,\r\n  \"totalCount\": 0,\r\n  \"totalPages\": 0,\r\n  \"hasPreviousPage\": false,\r\n  \"hasNextPage\": false\r\n}\r\n```\r\n            \r\nNotes  \r\n- Supports query parameters:  \r\n  - `pageNumber` *(optional, default = 1)* — specifies which page of results to return.  \r\n  - `pageSize` *(optional, default = 10)* — specifies how many items per page.  \r\n  - `search` *(optional)* — filters results by matching `name` or `code`.  \r\n  - `sortBy` *(optional)* — allows sorting by `name`, `code`, `createdAt`, or `updatedAt`.  \r\n  - `sortDirection` *(optional)* — `asc` or `desc`.  \r\n- Returns a paginated structure with metadata (total pages, total count, etc.).",
+        "parameters": [
+          {
+            "name": "PageNumber",
+            "in": "query",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "SortBy",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "SortDirection",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of fuel types successfully retrieved"
+          },
+          "400": {
+            "description": "Invalid request parameters"
+          },
+          "401": {
+            "description": "Unauthorized — missing or invalid token"
+          },
+          "500": {
+            "description": "Server error while retrieving fuel types"
+          }
+        }
+      }
+    },
+    "/api/admin/fuel-type/add": {
+      "post": {
+        "tags": [
+          "FuelType"
+        ],
+        "summary": "Add a new fuel type.",
+        "description": "Creates a new fuel type entry (e.g. **PB95**, **ON**, **LPG**, **E85**) in the system.  \r\nThe request validates and automatically formats data before saving:\r\n- **Code** → uppercase without spaces (e.g. `\" pb 95 \"` → `\"PB95\"`)  \r\n- **Name** → each word capitalized (e.g. `\"olej napędowy\"` → `\"Olej Napędowy\"`)  \r\n            \r\nExample request  \r\n```http\r\nPOST /api/admin/fuel-type/add\r\nContent-Type: application/json\r\n            \r\n{\r\n  \"name\": \"benzyna pb95\",\r\n  \"code\": \"pb95\"\r\n}\r\n```\r\n            \r\nExample response — Successful creation  \r\n```json\r\n{\r\n  \"success\": true,\r\n  \"message\": \"Fuel type added successfully.\",\r\n  \"data\": true\r\n}\r\n```\r\n            \r\nExample response — Validation error  \r\n```json\r\n{\r\n  \"success\": false,\r\n  \"message\": \"ValidationError\",\r\n  \"errors\": [ \"Fuel name cannot be empty.\" ],\r\n  \"data\": false\r\n}\r\n```\r\n            \r\nExample response — Conflict (fuel type already exists)  \r\n```json\r\n{\r\n  \"success\": false,\r\n  \"message\": \"Fuel type already exists.\",\r\n  \"errors\": [ \"Fuel type with code PB95 already exists.\" ],\r\n  \"data\": false\r\n}\r\n```\r\n            \r\nNotes  \r\n- Requires **Admin** role authorization.  \r\n- `code` must be unique, uppercase, and alphanumeric.  \r\n- `name` is automatically formatted to title case.  \r\n- Returns `201 Created` on success.",
+        "requestBody": {
+          "description": "Fuel type creation payload (name and code)",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddFuelTypeRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddFuelTypeRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddFuelTypeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Fuel type successfully created"
+          },
+          "400": {
+            "description": "Validation error (missing or invalid parameters)"
+          },
+          "409": {
+            "description": "Fuel type with the same code already exists"
+          },
+          "401": {
+            "description": "Unauthorized — Admin role required"
+          },
+          "500": {
+            "description": "Server error while adding the fuel type"
+          }
+        }
+      }
+    },
+    "/api/admin/fuel-type/edit": {
+      "patch": {
+        "tags": [
+          "FuelType"
+        ],
+        "summary": "Edit an existing fuel type (name and/or code).",
+        "description": "Updates an existing fuel type identified by its <b>OldCode</b>.  \r\nYou can modify one or both of the following fields: <b>NewName</b> and <b>NewCode</b>.  \r\n\r\nThe request automatically enforces formatting rules:\r\n- <b>NewCode</b> → spaces removed, converted to uppercase (e.g., \"pb95\" → \"PB95\")  \r\n- <b>NewName</b> → each word capitalized (e.g., \"olej napedowy\" → \"Olej Napędowy\")\r\n            \r\nExample request:\r\n```http\r\nPATCH /api/admin/fuel-type/edit\r\nContent-Type: application/json\r\n            \r\n{\r\n  \"oldCode\": \"PB95\",\r\n  \"newName\": \"Benzyna Premium 95\",\r\n  \"newCode\": \"PB95P\"\r\n}\r\n```\r\n            \r\nExample successful response:\r\n```json\r\n{\r\n  \"success\": true,\r\n  \"message\": \"Fuel type edited successfully.\",\r\n  \"data\": true\r\n}\r\n```\r\n            \r\nExample response – Validation error:\r\n```json\r\n{\r\n  \"success\": false,\r\n  \"message\": \"ValidationError\",\r\n  \"errors\": [ \"At least one of NewName or NewCode must be provided.\" ],\r\n  \"data\": false\r\n}\r\n```\r\n            \r\nExample response – Conflict (code already exists):\r\n```json\r\n{\r\n  \"success\": false,\r\n  \"message\": \"Fuel type already exists.\",\r\n  \"errors\": [ \"Fuel type with code PB98 already exists.\" ],\r\n  \"data\": false\r\n}\r\n```\r\n            \r\nExample response – Not found:\r\n```json\r\n{\r\n  \"success\": false,\r\n  \"message\": \"Fuel type does not exist.\",\r\n  \"errors\": [ \"Fuel type with code PB90 does not exist.\" ],\r\n  \"data\": false\r\n}\r\n```\r\n            \r\nNotes:\r\n- If <b>NewCode</b> already exists, a 409 Conflict is returned.\r\n- If <b>OldCode</b> is invalid or not found, a 404 Not Found is returned.\r\n- You must provide at least one of <b>NewName</b> or <b>NewCode</b>.\r\n- The <b>UpdatedAt</b> field is refreshed automatically upon success.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditFuelTypeRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditFuelTypeRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditFuelTypeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Fuel type edited successfully"
+          },
+          "400": {
+            "description": "Validation error (missing or invalid fields)"
+          },
+          "404": {
+            "description": "Fuel type with provided OldCode not found"
+          },
+          "409": {
+            "description": "Conflict – new fuel code already exists"
+          },
+          "500": {
+            "description": "Server error during edit operation"
+          }
+        }
+      }
+    },
+    "/api/admin/fuel-type/delete": {
+      "delete": {
+        "tags": [
+          "FuelType"
+        ],
+        "summary": "Deletes a fuel type from the system by its code.",
+        "description": "This endpoint allows an admin to delete a fuel type identified by its unique code.  \r\n**Important:** All related `FuelPrice` and `PriceProposal` records will also be deleted due to cascade delete.  \r\n            \r\nExample request:  \r\n```http\r\nDELETE /api/admin/fuel-type/delete?code=PB95\r\n```\r\n            \r\nExample response — Successful deletion:  \r\n```json\r\n{\r\n  \"success\": true,\r\n  \"message\": \"Fuel type deleted successfully.\",\r\n  \"data\": true\r\n}\r\n```\r\n            \r\nExample response — Fuel type not found:  \r\n```json\r\n{\r\n  \"success\": false,\r\n  \"message\": \"Fuel type does not exist.\",\r\n  \"errors\": [\"Fuel type with code PB95 does not exist.\"],\r\n  \"data\": false\r\n}\r\n```\r\n            \r\nExample response — Validation error (code empty):  \r\n```json\r\n{\r\n  \"success\": false,\r\n  \"message\": \"ValidationError\",\r\n  \"errors\": [\"CodeIsNullOrEmpty\"],\r\n  \"data\": false\r\n}\r\n```\r\n            \r\nNotes:  \r\n- `code` is a required query parameter identifying the fuel type to delete.  \r\n- Deletion is permanent in the current implementation.",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Fuel type deleted successfully"
+          },
+          "400": {
+            "description": "Validation error (missing or empty code)"
+          },
+          "404": {
+            "description": "Fuel type not found"
+          },
+          "500": {
+            "description": "Server error during deletion"
+          }
+        }
+      }
+    },
+    "/api/login": {
+      "post": {
+        "tags": [
+          "LoginRegisterContloller"
+        ],
+        "summary": "Authenticate user and set a secure HTTP-only cookie with JWT token.",
+        "description": "Description\r\nAuthenticates a user using their email and password.\r\nIf the credentials are valid, a JWT token is generated and stored in a secure HTTP-only cookie.\r\n\r\nExample request body for user\r\n```json\r\n{\r\n  \"email\": \"user@example.pl\",\r\n  \"password\": \"User123!\"\r\n}\r\n```\r\n\r\nExample request body for admin\r\n```json\r\n{\r\n  \"email\": \"admin@example.pl\",\r\n  \"password\": \"Admin123!\"\r\n}\r\n```\r\n            \r\nExample response\r\n```json\r\n{\r\n  \"success\": true,\r\n  \"message\": \"Login successful.\",\r\n  \"data\": {\r\n    \"message\": \"Login successful.\",\r\n    \"userId\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\r\n    \"email\": \"user@example.pl\",\r\n    \"roles\": [\"User\"]\r\n  }\r\n}\r\n```\r\n            \r\nNotes\r\n- The JWT token is automatically stored in a secure HTTP-only cookie named `jwt`\r\n- The cookie is sent automatically with subsequent requests - no manual handling required\r\n- The cookie expires after 3 hours\r\n- For frontend applications, ensure `withCredentials: true` is set in HTTP client (axios/fetch)\r\n- For Swagger/Postman testing, you can still use Bearer token in Authorization header",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User successfully logged in, JWT cookie set"
+          },
+          "401": {
+            "description": "Invalid email or password"
+          },
+          "403": {
+            "description": "User has no assigned roles OR email not confirmed"
+          },
+          "404": {
+            "description": "User with the given email not found"
+          },
+          "423": {
+            "description": "Account locked due to multiple failed login attempts"
+          },
+          "500": {
+            "description": "Server error — something went wrong in the backend"
+          }
+        }
+      }
+    },
+    "/api/logout": {
+      "post": {
+        "tags": [
+          "LoginRegisterContloller"
+        ],
+        "summary": "Logout user and clear authentication cookie.",
+        "description": "Description\r\nLogs out the currently authenticated user by clearing the JWT cookie and signing out from Identity.\r\n\r\nExample response\r\n```json\r\n{\r\n  \"success\": true,\r\n  \"message\": \"Logout successful.\"\r\n}\r\n```\r\n            \r\nNotes\r\n- This endpoint requires authentication (must have valid JWT cookie)\r\n- The JWT cookie is removed from the browser\r\n- User session is terminated on the server side\r\n- After logout, protected endpoints will return 401 Unauthorized",
+        "responses": {
+          "200": {
+            "description": "User successfully logged out, JWT cookie cleared"
+          },
+          "401": {
+            "description": "User is not authenticated"
+          },
+          "500": {
+            "description": "Server error — something went wrong during logout"
+          }
+        }
+      }
+    },
+    "/api/facebook/login": {
+      "post": {
+        "tags": [
+          "LoginRegisterContloller"
+        ],
+        "summary": "Authenticate user via Facebook OAuth and set a secure HTTP-only cookie with JWT token.",
+        "description": "Description\r\nAuthenticates a user using a Facebook access token obtained from Facebook Login SDK.\r\nIf the token is valid and the user exists in the system, a JWT token is generated and stored in a secure HTTP-only cookie.\r\n\r\nExample request body\r\n```json\r\n{\r\n  \"accessToken\": \"EAABwzLixnjYBO7ZC8ZCqKZBvN9k...\"\r\n}\r\n```\r\n            \r\nExample response\r\n```json\r\n{\r\n  \"success\": true,\r\n  \"message\": \"Login successful via Facebook\",\r\n  \"data\": {\r\n    \"message\": \"Login successful via Facebook\",\r\n    \"email\": \"user@example.pl\",\r\n    \"userName\": \"JohnDoe\",\r\n    \"roles\": [\"User\"]\r\n  }\r\n}\r\n```\r\n            \r\nNotes\r\n- The access token must be obtained from Facebook Login SDK on the client side\r\n- User must be already registered in the system (use /facebook/register for new users)\r\n- The JWT token is automatically stored in a secure HTTP-only cookie named `jwt`\r\n- The cookie is sent automatically with subsequent requests - no manual handling required\r\n- The cookie expires after 3 hours\r\n- For frontend applications, ensure `withCredentials: true` is set in HTTP client (axios/fetch)\r\n- Facebook token is validated against Facebook Graph API",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FacebookTokenRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FacebookTokenRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/FacebookTokenRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User successfully logged in via Facebook, JWT cookie set"
+          },
+          "400": {
+            "description": "Email not provided by Facebook"
+          },
+          "401": {
+            "description": "Invalid Facebook access token"
+          },
+          "404": {
+            "description": "User not found - registration required"
+          },
+          "500": {
+            "description": "Server error — something went wrong in the backend"
+          }
+        }
+      }
+    },
+    "/api/facebook/register": {
+      "post": {
+        "tags": [
+          "LoginRegisterContloller"
+        ],
+        "summary": "Register a new user via Facebook OAuth and set a secure HTTP-only cookie with JWT token.",
+        "description": "Description\r\nRegisters a new user using a Facebook access token obtained from Facebook Login SDK.\r\nIf the token is valid, a new account is created with email from Facebook profile.\r\nUser is automatically assigned the \"User\" role and logged in.\r\n\r\nExample request body\r\n```json\r\n{\r\n  \"accessToken\": \"EAABwzLixnjYBO7ZC8ZCqKZBvN9k...\"\r\n}\r\n```\r\n            \r\nExample response\r\n```json\r\n{\r\n  \"success\": true,\r\n  \"message\": \"Register successful via Facebook\",\r\n  \"data\": {\r\n    \"message\": \"Register successful via Facebook\",\r\n    \"email\": \"newuser@example.pl\",\r\n    \"userName\": \"JohnDoe\",\r\n    \"roles\": [\"User\"]\r\n  }\r\n}\r\n```\r\n            \r\nNotes\r\n- The access token must be obtained from Facebook Login SDK on the client side\r\n- Email must be available in Facebook profile (public permission required)\r\n- If user already exists, registration will fail - use /facebook/login instead\r\n- Username is automatically generated from Facebook name (alphanumeric characters only)\r\n- Email is automatically confirmed (EmailConfirmed = true)\r\n- User is automatically assigned to \"User\" role\r\n- The JWT token is automatically stored in a secure HTTP-only cookie named `jwt`\r\n- The cookie is sent automatically with subsequent requests - no manual handling required\r\n- The cookie expires after 3 hours\r\n- For frontend applications, ensure `withCredentials: true` is set in HTTP client (axios/fetch)\r\n- Facebook token is validated against Facebook Graph API",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FacebookTokenRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FacebookTokenRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/FacebookTokenRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User successfully registered via Facebook, JWT cookie set"
+          },
+          "400": {
+            "description": "Email not provided by Facebook"
+          },
+          "401": {
+            "description": "Invalid Facebook access token"
+          },
+          "500": {
+            "description": "Server error — something went wrong in the backend or user creation failed"
+          }
+        }
+      }
+    },
+    "/api/google/login": {
+      "post": {
+        "tags": [
+          "LoginRegisterContloller"
+        ],
+        "summary": "Login a user via Google OAuth and set a secure HTTP-only cookie with JWT token.",
+        "description": "Description\r\nLogs in a user using a Google ID token obtained from Google Identity Services SDK.\r\nIf the token is valid and the user exists, the user is automatically logged in.\r\n\r\nExample request body\r\n```json\r\n{\r\n  \"idToken\": \"eyJhbGciOiJSUzI1NiIsImtpZCI6Ij...\"\r\n}\r\n```\r\n            \r\nExample response\r\n```json\r\n{\r\n  \"success\": true,\r\n  \"message\": \"Login successful via Google\",\r\n  \"data\": {\r\n    \"message\": \"Login successful via Google\",\r\n    \"email\": \"user@example.com\",\r\n    \"userName\": \"JohnDoe\",\r\n    \"roles\": [\"User\"]\r\n  }\r\n}\r\n```\r\n            \r\nNotes\r\n- The `idToken` must be obtained from Google Identity Services SDK on the client side\r\n- If the user does not exist, login will fail with a 404 error (\"User not found. Please register first.\")\r\n- JWT token is automatically stored in a secure HTTP-only cookie named `jwt`\r\n- The cookie is sent automatically with subsequent requests — no manual handling required\r\n- The cookie expires after 3 hours\r\n- For frontend applications, ensure `credentials: \"include\"` is set in HTTP client (fetch/axios)\r\n- Google ID token is validated using `GoogleJsonWebSignature.ValidateAsync`",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoogleTokenRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoogleTokenRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoogleTokenRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User successfully logged in via Google, JWT cookie set"
+          },
+          "401": {
+            "description": "Invalid Google ID token"
+          },
+          "404": {
+            "description": "User not found — please register first"
+          },
+          "500": {
+            "description": "Server error — something went wrong in the backend"
+          }
+        }
+      }
+    },
+    "/api/google/register": {
+      "post": {
+        "tags": [
+          "LoginRegisterContloller"
+        ],
+        "summary": "Register a new user via Google OAuth and set a secure HTTP-only cookie with JWT token.",
+        "description": "Description\r\nRegisters a new user using a Google ID token obtained from Google Identity Services SDK.\r\nIf the token is valid, a new account is created with email and name from Google profile.\r\n\r\nExample request body\r\n```json\r\n{\r\n  \"idToken\": \"eyJhbGciOiJSUzI1NiIsImtpZCI6Ij...\"\r\n}\r\n```\r\n            \r\nExample response\r\n```json\r\n{\r\n  \"success\": true,\r\n  \"message\": \"Register successful via Google\",\r\n  \"data\": {\r\n    \"message\": \"Register successful via Google\",\r\n    \"email\": \"newuser@example.com\",\r\n    \"userName\": \"JohnDoe\",\r\n    \"roles\": [\"User\"]\r\n  }\r\n}\r\n```\r\n            \r\nNotes\r\n- The `idToken` must be obtained from Google Identity Services SDK on the client side\r\n- If the user already exists, registration will return success with existing account info\r\n- Username is automatically generated from Google name (alphanumeric characters only)\r\n- Email is automatically confirmed (EmailConfirmed = true)\r\n- User is automatically assigned to \"User\" role\r\n- JWT token is automatically stored in a secure HTTP-only cookie named `jwt`\r\n- The cookie is sent automatically with subsequent requests — no manual handling required\r\n- The cookie expires after 3 hours\r\n- For frontend applications, ensure `credentials: \"include\"` is set in HTTP client (fetch/axios)\r\n- Google ID token is validated using `GoogleJsonWebSignature.ValidateAsync`",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoogleTokenRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoogleTokenRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoogleTokenRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User successfully registered via Google, JWT cookie set"
+          },
+          "401": {
+            "description": "Invalid Google ID token"
+          },
+          "500": {
+            "description": "Server error — something went wrong in the backend or user creation failed"
+          }
+        }
+      }
+    },
+    "/api/refresh": {
+      "post": {
+        "tags": [
+          "LoginRegisterContloller"
+        ],
+        "summary": "Refresh JWT and obtain a new access token.",
+        "description": "Description  \r\nGenerates a new JWT access token and refresh token based on the existing refresh token stored in cookies.  \r\nThe existing refresh token will be revoked and replaced with a new one.  \r\nThis endpoint does not require authentication via access token, but a valid refresh token cookie is mandatory.\r\n            \r\nExample request  \r\n```http\r\nPOST /api/auth/refresh HTTP/1.1\r\nHost: example.com\r\nCookie: refresh_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\r\n```\r\n            \r\nExample response (success)  \r\n```json\r\n{\r\n  \"message\": \"Token refreshed successfully.\",\r\n  \"email\": \"john.dope@example.com\",\r\n  \"userName\": \"JohnDope\",\r\n  \"roles\": [\"User\"]\r\n}\r\n```\r\n            \r\nExample response (missing or invalid refresh token)  \r\n```json\r\n{\r\n  \"success\": false,\r\n  \"message\": \"Refresh token is missing or invalid\",\r\n  \"errors\": []\r\n}\r\n```\r\n            \r\nNotes  \r\n- Requires a valid refresh token in the `refresh_token` cookie.  \r\n- The old refresh token will be revoked upon successful refresh.  \r\n- Returns a new JWT access token and refresh token.  \r\n- The `X-Token-Expiry` header contains the new JWT expiration date in ISO 8601 format.  \r\n- Will return **401 Unauthorized** if the refresh token is missing, expired, or revoked.  \r\n- Will return **403 Forbidden** if the user has no roles assigned.  \r\n- Will return **404 Not Found** if the user associated with the refresh token does not exist.",
+        "responses": {
+          "200": {
+            "description": "Token refreshed successfully — new JWT and refresh token issued"
+          },
+          "401": {
+            "description": "Unauthorized — refresh token missing, expired, or invalid"
+          },
+          "403": {
+            "description": "Forbidden — user has no roles assigned"
+          },
+          "404": {
+            "description": "Not Found — user not found for the provided refresh token"
+          },
+          "500": {
+            "description": "Server error — unexpected exception occurred during refresh"
+          }
+        }
+      }
+    },
+    "/api/me": {
+      "get": {
+        "tags": [
+          "LoginRegisterContloller"
+        ],
+        "summary": "Retrieve information about the currently authenticated user.",
+        "description": "Description  \r\nReturns detailed information about the user based on the JWT token provided in the `Authorization` header.  \r\nThis endpoint requires authentication — a valid bearer token must be included in the request.\r\n\r\nExample request  \r\n```http\r\nGET /api/auth/me HTTP/1.1\r\nHost: example.com\r\nAuthorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\r\n```\r\n            \r\nExample response (success)  \r\n```json\r\n{\r\n  \"message\": \"User retrieved successfully.\",\r\n  \"email\": \"john.dope@example.com\",\r\n  \"userName\": \"JohnDope\",\r\n  \"roles\": [\"User\"]\r\n}\r\n```\r\n            \r\nExample response (unauthorized)  \r\n```json\r\n{\r\n  \"success\": false,\r\n  \"message\": \"User not authenticated\"\r\n}\r\n```\r\n            \r\nExample response (not found)  \r\n```json\r\n{\r\n  \"success\": false,\r\n  \"message\": \"User not found.\",\r\n  \"errors\": []\r\n}\r\n```\r\n            \r\nNotes  \r\n- Requires a valid JWT Bearer token in the request header.  \r\n- The token must contain a valid user identifier (`ClaimTypes.NameIdentifier`).  \r\n- Returns user information including username, email, and assigned roles.  \r\n- Will return **401 Unauthorized** if the token is missing or invalid.  \r\n- Will return **404 Not Found** if the user no longer exists in the system.",
+        "responses": {
+          "200": {
+            "description": "User retrieved successfully — user info returned"
+          },
+          "401": {
+            "description": "Unauthorized — missing or invalid JWT token"
+          },
+          "403": {
+            "description": "Forbidden — user has no roles assigned"
+          },
+          "404": {
+            "description": "Not Found — user not found in database"
+          },
+          "500": {
+            "description": "Server error — unexpected exception occurred"
+          }
+        }
+      }
+    },
+    "/api/register": {
+      "post": {
+        "tags": [
+          "LoginRegisterContloller"
+        ],
+        "summary": "Register a new user account.",
+        "description": "Description\r\nCreates a new user account with the provided username, email, and password.\r\nAfter successful registration, a confirmation email is sent to the user's email address.\r\n\r\nExample request body\r\n```json\r\n{\r\n  \"userName\": \"JohnDope\",\r\n  \"email\": \"john.dope@example.com\",\r\n  \"password\": \"John!23\",\r\n  \"confirmPassword\": \"John!23\"\r\n}\r\n```\r\n            \r\nExample response (success)\r\n```json\r\n{\r\n  \"success\": true,\r\n  \"message\": \"User registered successfully. Please check your email to confirm your account.\"\r\n}\r\n```\r\n            \r\nExample response (error)\r\n```json\r\n{\r\n  \"success\": false,\r\n  \"message\": \"User with this email: john.dope@example.com already exists\",\r\n  \"errors\": []\r\n}\r\n```\r\n            \r\nNotes\r\n- Password must be at least 6 characters long and contain:\r\n  - At least one uppercase letter\r\n  - At least one number\r\n  - At least one special character\r\n- A confirmation email will be sent to the provided email address\r\n- The user must confirm their email before they can log in\r\n- Username and email must be unique",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterNewUserRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterNewUserRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterNewUserRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "User registered successfully — confirmation email sent"
+          },
+          "400": {
+            "description": "Validation errors — email/username already exists or invalid input"
+          },
+          "500": {
+            "description": "Server error — something went wrong in the backend"
+          }
+        }
+      }
+    },
+    "/api/confirm-email": {
+      "post": {
+        "tags": [
+          "LoginRegisterContloller"
+        ],
+        "summary": "Confirm user email address",
+        "description": "Description:\r\nConfirms a user's email address using the token sent via email during registration.\r\n\r\nExample request:\r\n```json\r\n{\r\n  \"email\": \"john.dope@example.com\",\r\n  \"token\": \"CfDJ8Abc123...\"\r\n}\r\n```\r\n            \r\nExample response (success):\r\n```json\r\n{\r\n  \"success\": true,\r\n  \"message\": \"Email confirmed successfully. You can now log in.\"\r\n}\r\n```\r\n            \r\nExample response (error):\r\n```json\r\n{\r\n  \"success\": false,\r\n  \"message\": \"Invalid or expired confirmation token\",\r\n  \"errors\": [\"Invalid token\"]\r\n}\r\n```\r\n            \r\nNotes:\r\n- The token is sent to the user's email during registration\r\n- Tokens typically expire after 24 hours\r\n- Once confirmed, the user can log in to the application\r\n- If email is already confirmed, a 400 error will be returned",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmEmailRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmEmailRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmEmailRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email confirmed successfully"
+          },
+          "400": {
+            "description": "Invalid or expired token, or email already confirmed"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/reset-password": {
+      "post": {
+        "tags": [
+          "LoginRegisterContloller"
+        ],
+        "summary": "Request password reset - sends an email with reset token",
+        "description": "Sample request:\r\n\r\n    POST /api/reset-password?email=user@example.com\r\n    \r\nThis endpoint:\r\n- Validates if the user exists\r\n- Checks if email is confirmed\r\n- Generates a password reset token\r\n- Sends an email with reset instructions\r\n\r\nThe token expires after 24 hours.",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "description": "User's email address",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Password reset email sent successfully"
+          },
+          "400": {
+            "description": "Email is not confirmed"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/set-new-password": {
+      "post": {
+        "tags": [
+          "LoginRegisterContloller"
+        ],
+        "summary": "Set a new password using reset token",
+        "description": "Sample request:\r\n\r\n    POST /api/set-new-password\r\n    {\r\n        \"email\": \"user@example.com\",\r\n        \"token\": \"CfDJ8IdAXN6s0V1Cl4t834jHBx...\",\r\n        \"password\": \"NewSecure123!\",\r\n        \"confirmPassword\": \"NewSecure123!\"\r\n    }\r\n    \r\nPassword requirements:\r\n- Minimum 6 characters\r\n- At least one uppercase letter (A-Z)\r\n- At least one number (0-9)\r\n- At least one special character (!@#$%^&*(),.?\":{}|<>)\r\n\r\nThe token must be the one received via email from the reset-password endpoint.\r\nToken expires after 24 hours.",
+        "requestBody": {
+          "description": "Password reset details including email, token, and new password",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/admin/proposal/list": {
+      "get": {
+        "tags": [
+          "ProposalPriceContloller"
+        ],
+        "summary": "Retrieves a paginated list of pending price proposals with optional search and sorting.",
+        "description": "Sample request:\r\n            \r\n    GET /api/priceproposal/list?PageNumber=1&PageSize=10&Search=benzyna&SortBy=createdat&SortDirection=desc\r\n            \r\nAvailable sort fields:\r\n- username - Sort by user who created the proposal\r\n- brandname - Sort by gas station brand name\r\n- street - Sort by station street address\r\n- housenumber - Sort by station house number\r\n- city - Sort by station city\r\n- fuelname - Sort by fuel type name\r\n- fuelcode - Sort by fuel type code\r\n- proposedprice - Sort by proposed price value\r\n- createdat - Sort by creation date (default)\r\n            \r\nSort directions: asc (ascending) or desc (descending)\r\n            \r\nSearch will filter results across all displayed fields including username, brand name, address, fuel type, and price.\r\n            \r\nSample response:\r\n            \r\n    {\r\n      \"items\": [\r\n        {\r\n          \"userName\": \"User3\",\r\n          \"brandName\": \"Moya\",\r\n          \"street\": \"Poznańska\",\r\n          \"houseNumber\": \"112\",\r\n          \"city\": \"Łowicz\",\r\n          \"fuelName\": \"E85\",\r\n          \"fuelCode\": \"E85\",\r\n          \"proposedPrice\": 4.74,\r\n          \"status\": \"Pending\",\r\n          \"token\": \"930f26dd200141bcac45416fe745696f\",\r\n          \"createdAt\": \"2025-11-09T16:57:26.402333Z\"\r\n        },\r\n        {\r\n          \"userName\": \"User6\",\r\n          \"brandName\": \"Circle K\",\r\n          \"street\": \"Adamówek\",\r\n          \"houseNumber\": \"16\",\r\n          \"city\": \"Ozorków\",\r\n          \"fuelName\": \"LPG\",\r\n          \"fuelCode\": \"LPG\",\r\n          \"proposedPrice\": 6.78,\r\n          \"status\": \"Pending\",\r\n          \"token\": \"ff5355b9e6a44011851bf58252aff58f\",\r\n          \"createdAt\": \"2025-11-09T16:57:26.420039Z\"\r\n        }\r\n      ],\r\n      \"pageNumber\": 1,\r\n      \"pageSize\": 10,\r\n      \"totalCount\": 25,\r\n      \"totalPages\": 3,\r\n      \"hasPreviousPage\": false,\r\n      \"hasNextPage\": true\r\n    }",
+        "parameters": [
+          {
+            "name": "PageNumber",
+            "in": "query",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "SortBy",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "SortDirection",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the paginated list of price proposals"
+          },
+          "400": {
+            "description": "If the request parameters are invalid"
+          },
+          "500": {
+            "description": "If an internal server error occurs"
+          }
+        }
+      }
+    },
+    "/api/admin/proposal": {
+      "get": {
+        "tags": [
+          "ProposalPriceContloller"
+        ],
+        "summary": "Retrieve a price proposal by its photo token.",
+        "description": "Description: Returns detailed information about a specific fuel price proposal, including station details, fuel type, proposed price, and a temporary presigned URL to the verification photo.\r\n            \r\nExample request\r\n```http\r\nGET /api/proposal?token=abc123def456\r\n```\r\n            \r\nExample response\r\n```json\r\n{\r\n  \"email\": \"user@example.pl\",\r\n  \"brandName\": \"Orlen\",\r\n  \"street\": \"Ignacego Domejki\",\r\n  \"houseNumber\": \"1a\",\r\n  \"city\": \"Legnica\",\r\n  \"postalCode\": \"59-220\",\r\n  \"fuelType\": \"ON\",\r\n  \"proposedPrice\": 4.44,\r\n  \"photoUrl\": \"http://localhost:9000/fuel-prices/...\",\r\n  \"createdAt\": \"2025-10-27T15:31:18.372993Z\"\r\n}\r\n```\r\n            \r\nNotes\r\n- `photoUrl` is a temporary presigned URL valid for 1 hour (3600 seconds) from generation.\r\n- `token` is a unique identifier assigned to each price proposal for secure access.\r\n- `proposedPrice` is the fuel price in PLN per liter submitted by the user.\r\n- `createdAt` is the timestamp (UTC) when the proposal was submitted.\r\n- The photo token does not expose internal database IDs for security purposes.",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "description": "Unique photo token identifier for the price proposal.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Price proposal successfully retrieved."
+          },
+          "400": {
+            "description": "Validation error - photo token is null or empty."
+          },
+          "404": {
+            "description": "Price proposal not found with the provided photo token."
+          },
+          "500": {
+            "description": "Unexpected server error occurred while processing the request."
+          }
+        }
+      }
+    },
+    "/api/admin/proposal/change-status": {
+      "patch": {
+        "tags": [
+          "ProposalPriceContloller"
+        ],
+        "summary": "Accept or reject a pending price proposal submitted by a user.",
+        "description": "Allows an administrator to review and change the status of a price proposal.\r\n\r\n**When a proposal is accepted:**\r\n- The fuel price at the station is created or updated with the proposed price\r\n- The proposal status changes to Accepted\r\n- The user's proposal statistics are updated (approved count and points increase)\r\n\r\n**When a proposal is rejected:**\r\n- The proposal status changes to Rejected\r\n- The user's proposal statistics are updated (rejected count increases)\r\n- No changes are made to station fuel prices\r\n\r\n**Important Notes:**\r\n- Only proposals with Pending status can be reviewed\r\n- Each proposal can only be reviewed once (idempotent operation)\r\n- Admin email is automatically extracted from JWT token\r\n- The operation uses database transactions to ensure data consistency\r\n\r\nExample request (Accept):\r\n```\r\nPOST /api/proposals/change-status?token=abc123token&isAccepted=true\r\n```\r\n\r\nExample request (Reject):\r\n```\r\nPOST /api/proposals/change-status?token=abc123token&isAccepted=false\r\n```\r\n\r\nExample success response (200 OK):\r\n```json\r\n{\r\n  \"message\": \"Price proposal accepted successfully\",\r\n  \"data\": true\r\n}\r\n```\r\n\r\nExample error response - already reviewed (409 Conflict):\r\n```json\r\n{\r\n  \"success\": false,\r\n  \"message\": \"This proposal has already been reviewed\",\r\n  \"errors\": []\r\n}\r\n```\r\n\r\nExample error response - not found (404 Not Found):\r\n```json\r\n{\r\n  \"success\": false,\r\n  \"message\": \"Price proposal not found\",\r\n  \"errors\": []\r\n}\r\n```",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "description": "Unique token identifying the price proposal to review",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "isAccepted",
+            "in": "query",
+            "description": "True to accept the proposal, false to reject it",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Proposal status changed successfully"
+          },
+          "400": {
+            "description": "Invalid token or missing parameters"
+          },
+          "401": {
+            "description": "Unauthorized - valid JWT token with Admin role required"
+          },
+          "403": {
+            "description": "Forbidden - Admin role required"
+          },
+          "404": {
+            "description": "Price proposal not found or not in Pending status"
+          },
+          "409": {
+            "description": "Conflict - proposal has already been reviewed"
+          },
+          "500": {
+            "description": "Internal server error or database transaction failed"
+          }
+        }
+      }
+    },
+    "/api/admin/proposal/stats": {
+      "get": {
+        "tags": [
+          "ProposalPriceContloller"
+        ],
+        "summary": "Retrieves aggregated statistics of all price proposals.",
+        "description": "Returns a summary of how many price proposals were:\r\n- **Accepted**\r\n- **Rejected**\r\n- **Pending**\r\n            \r\nThis endpoint is typically used for administrative dashboards and monitoring trends.\r\nIt performs a database-side aggregation to ensure optimal performance.\r\n            \r\n**Returned fields:**\r\n- <b>acceptedRate</b> – number of proposals marked as Accepted  \r\n- <b>rejectedRate</b> – number of proposals marked as Rejected  \r\n- <b>pendingRate</b> – number of proposals still awaiting review  \r\n            \r\n**Example request:**\r\n```\r\nGET /api/admin/proposal/stats\r\n```\r\n            \r\n**Example successful response (200 OK):**\r\n```json\r\n{\r\n  \"acceptedRate\": 10,\r\n  \"rejectedRate\": 5,\r\n  \"pendingRate\": 2\r\n}\r\n```\r\n            \r\n**Example error response (500 Internal Server Error):**\r\n```json\r\n{\r\n  \"success\": false,\r\n  \"message\": \"An error occurred while processing your request.\",\r\n  \"errors\": [ \"Detailed error message...\" ],\r\n  \"data\": null\r\n}\r\n```\r\n            \r\n**Notes:**\r\n- Only aggregate counts are returned — no individual proposal details.\r\n- Endpoint requires authorization if configured in the API.\r\n- This operation is read-only.",
+        "responses": {
+          "200": {
+            "description": "Statistics retrieved successfully"
+          },
+          "401": {
+            "description": "Unauthorized – missing or invalid authentication token"
+          },
+          "403": {
+            "description": "Forbidden – user does not have permission to access this resource"
+          },
+          "500": {
+            "description": "Internal server error while generating statistics"
+          }
+        }
+      }
+    },
+    "/api/proposal-statistic": {
+      "get": {
+        "tags": [
+          "ProposalStatistic"
+        ],
+        "summary": "Retrieve proposal statistics for a user by their email address.",
+        "description": "Returns summarized statistics about all proposals submitted by the user with the given email.\r\nThe user's email is automatically extracted from the JWT token, ensuring users can only access their own statistics.\r\n            \r\nExample request\r\n```http\r\nGET /api/proposals-statistics\r\n```\r\n            \r\nExample response\r\n```json\r\n{\r\n  \"totalProposals\": 42,\r\n  \"approvedProposals\": 30,\r\n  \"rejectedProposals\": 12,\r\n  \"acceptedRate\": 71,\r\n  \"updatedAt\": \"2025-10-17T12:34:56Z\"\r\n}\r\n```\r\n            \r\nNotes:\r\n- `acceptedRate` is calculated as the percentage of approved proposals out of the total.\r\n- `updatedAt` is the timestamp (UTC) of the last statistics update.\r\n- User email is automatically retrieved from JWT token claims.\r\n- No email parameter is required - the endpoint always returns data for the authenticated user.",
+        "responses": {
+          "200": {
+            "description": "Statistics successfully retrieved"
+          },
+          "400": {
+            "description": "Internal repository issue"
+          },
+          "401": {
+            "description": "Unauthorize"
+          },
+          "404": {
+            "description": "User or statistics not found"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        }
+      }
+    },
+    "/api/proposal-statistic/top-users": {
+      "get": {
+        "tags": [
+          "ProposalStatistic"
+        ],
+        "summary": "Retrieve a paginated list of top users ranked by their proposal points.",
+        "description": "Returns users ranked by their total points (earned from approved proposals), with support for pagination.\r\nUsers are sorted in descending order by points. If no pagination parameters are provided, defaults to page 1 with 10 items per page.\r\n            \r\nExample request\r\n```http\r\nGET /api/proposals/top-users?PageNumber=1&PageSize=10\r\n```\r\n            \r\nExample response\r\n```json\r\n{\r\n  \"items\": [\r\n    {\r\n      \"userName\": \"User1\",\r\n      \"totalProposals\": 20,\r\n      \"approvedProposals\": 12,\r\n      \"rejectedProposals\": 8,\r\n      \"acceptedRate\": 60,\r\n      \"points\": 12\r\n    },\r\n    {\r\n      \"userName\": \"User6\",\r\n      \"totalProposals\": 18,\r\n      \"approvedProposals\": 11,\r\n      \"rejectedProposals\": 7,\r\n      \"acceptedRate\": 61,\r\n      \"points\": 11\r\n    },\r\n    {\r\n      \"userName\": \"User8\",\r\n      \"totalProposals\": 12,\r\n      \"approvedProposals\": 11,\r\n      \"rejectedProposals\": 1,\r\n      \"acceptedRate\": 91,\r\n      \"points\": 11\r\n    }\r\n  ],\r\n  \"pageNumber\": 1,\r\n  \"pageSize\": 10,\r\n  \"totalCount\": 3,\r\n  \"totalPages\": 1\r\n}\r\n```\r\n            \r\nNotes:\r\n- Users are ranked by total points earned from approved proposals\r\n- `acceptedRate` represents the percentage of approved proposals out of total proposals\r\n- Default pagination: PageNumber = 1, PageSize = 10\r\n- If requested page number exceeds total pages, the last available page is returned\r\n- Empty list is returned if no users have proposal statistics",
+        "parameters": [
+          {
+            "name": "PageNumber",
+            "in": "query",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Top users list successfully retrieved (may be empty)"
+          },
+          "400": {
+            "description": "Invalid pagination parameters"
+          },
+          "500": {
+            "description": "Unexpected server error"
+          }
+        }
+      }
+    },
+    "/api/station/map/all": {
+      "post": {
+        "tags": [
+          "Station"
+        ],
+        "summary": "Get all fuel stations for displaying pins and details on the map.",
+        "description": "Description\r\nReturns a list of stations filtered by:\r\n- brand names (optional)\r\n- location and distance (optional)\r\n            \r\nIf no filters are provided, all stations are returned.\r\n            \r\nExample request body\r\nEmpty request – return all stations\r\n```json\r\n{\r\n  \"brandName\": [],\r\n  \"locationLatitude\": null,\r\n  \"locationLongitude\": null,\r\n  \"distance\": null\r\n}\r\n```\r\n            \r\nFilter by brand and location within 10 km\r\n```json\r\n{\r\n  \"brandName\": [\"Orlen\", \"Shell\"],\r\n  \"locationLatitude\": 52.4064,\r\n  \"locationLongitude\": 16.9252,\r\n  \"distance\": 10\r\n}\r\n```\r\n            \r\nExample response\r\n```json\r\n[\r\n  {\r\n    \"brandName\": \"Orlen\",\r\n    \"street\": \"Głogowska\",\r\n    \"houseNumber\": \"25\",\r\n    \"city\": \"Poznań\",\r\n    \"postalCode\": \"60-702\",\r\n    \"latitude\": 52.394,\r\n    \"longitude\": 16.881\r\n  },\r\n  {\r\n    \"brandName\": \"Shell\",\r\n    \"street\": \"Hetmańska\",\r\n    \"houseNumber\": \"10\",\r\n    \"city\": \"Poznań\",\r\n    \"postalCode\": \"60-251\",\r\n    \"latitude\": 52.385,\r\n    \"longitude\": 16.915\r\n  }\r\n]\r\n```\r\n            \r\nNotes\r\n- `distance` is in **kilometers**\r\n- `locationLatitude` / `locationLongitude` must be in **WGS84 format**",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetStationsRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetStationsRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetStationsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Everything is fine – stations successfully retrieved"
+          },
+          "404": {
+            "description": "No stations found or validation error"
+          },
+          "500": {
+            "description": "Something went wrong on the server (pray to the God Emperor)"
+          }
+        }
+      }
+    },
+    "/api/station/map/nearest": {
+      "get": {
+        "tags": [
+          "Station"
+        ],
+        "summary": "Get nearest stations. Autommatly response only 3",
+        "description": "Endpoint return a list of stations with their\r\n[{\r\n\"brandName\": string,\r\n\"address\": string,\r\n\"latitude\": double,\r\n \"longitude\": double\r\n},...]",
+        "parameters": [
+          {
+            "name": "latitude",
+            "in": "query",
+            "description": "Client latitude",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "longitude",
+            "in": "query",
+            "description": "Client longitude",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "count",
+            "in": "query",
+            "description": "How many Stations they can see",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Everything is fine"
+          },
+          "404": {
+            "description": "Can't find stations / Validation error"
+          },
+          "500": {
+            "description": "Something bad in backend. Pray to god emperor"
+          }
+        }
+      }
+    },
+    "/api/station/list": {
+      "post": {
+        "tags": [
+          "Station"
+        ],
+        "summary": "Retrieve a paginated list of fuel stations based on filters and sorting options.",
+        "description": " Returns a list of fuel stations that match the specified criteria.\r\n You can filter by location (latitude, longitude, distance), fuel type, price range, and brand name.\r\n Results can be sorted by distance or price, and are returned with pagination support.\r\n \r\n Example request body - No filters, no sorting, automatic pagination\r\n ```json\r\n {\r\n  \"sortingByDisance\": null,\r\n  \"sortingByPrice\": null,\r\n  \"sortingDirection\": null,\r\n  \"pagging\": {\r\n    \"pageNumber\": null,\r\n    \"pageSize\": null\r\n  }\r\n}\r\n ```\r\n Example request body - Filter by date after update with page navigation\r\n ```json\r\n {\r\n  \"priceUpdatedAfter\": \"2025-11-10T00:00:00Z\",\r\n \"sortingByDisance\": null,\r\n \"sortingByPrice\": null,\r\n  \"sortingDirection\": null,\r\n   \"pagging\": {\r\n     \"pageNumber\": null,\r\n     \"pageSize\": null\r\n   }\r\n }\r\n ```\r\n Example request body - Filter by date before update with page navigation\r\n ```json\r\n {\r\n  \"priceUpdatedBefore\": \"2025-11-10T00:00:00Z\",\r\n \"sortingByDisance\": null,\r\n \"sortingByPrice\": null,\r\n  \"sortingDirection\": null,\r\n   \"pagging\": {\r\n     \"pageNumber\": null,\r\n     \"pageSize\": null\r\n   }\r\n }\r\n ```\r\n Example request body - Filter by distance with page navigation\r\n ```json\r\n {\r\n  \"locationLatitude\": 51.21006,\r\n  \"locationLongitude\": 16.1619,\r\n  \"distance\": 200,\r\n  \"sortingByDisance\": null,\r\n  \"sortingByPrice\": null,\r\n  \"sortingDirection\": null,\r\n  \"pagging\": {\r\n    \"pageNumber\": 2,\r\n    \"pageSize\": 10\r\n  }\r\n}\r\n ```\r\n\r\n Example request body - Filter by fuel type only\r\n ```json\r\n{\r\n  \"fuelType\": [\"LPG\"],\r\n  \"sortingByDisance\": null,\r\n  \"sortingByPrice\": null,\r\n  \"sortingDirection\": null,\r\n  \"pagging\": {\r\n    \"pageNumber\": 1,\r\n    \"pageSize\": null\r\n  }\r\n}\r\n ```\r\n\r\n Example request body - Filter by fuel type and price range\r\n ```json\r\n{\r\n  \"fuelType\": [\"LPG\"],\r\n  \"minPrice\": 3.50,\r\n  \"maxPrice\": 5.00,\r\n  \"sortingByDisance\": null,\r\n  \"sortingByPrice\": null,\r\n  \"sortingDirection\": null,\r\n  \"pagging\": {\r\n    \"pageNumber\": 1,\r\n    \"pageSize\": null\r\n  }\r\n}\r\n ```\r\n\r\n Example request body - Filter by brand name only\r\n ```json\r\n{\r\n  \"brandName\": \"Orlen\",\r\n  \"sortingByDisance\": null,\r\n  \"sortingByPrice\": null,\r\n  \"sortingDirection\": null,\r\n  \"pagging\": {\r\n    \"pageNumber\": 2,\r\n    \"pageSize\": 7\r\n  }\r\n}\r\n ```\r\n\r\n Example request body - Filter by location and fuel type\r\n ```json\r\n{\r\n  \"locationLatitude\": 51.21006,\r\n  \"locationLongitude\": 16.1619,\r\n  \"distance\": 10,\r\n  \"fuelType\": [\"LPG\"],\r\n  \"sortingByDisance\": null,\r\n  \"sortingByPrice\": null,\r\n  \"sortingDirection\": null,\r\n  \"pagging\": {\r\n    \"pageNumber\": null,\r\n    \"pageSize\": null\r\n  }\r\n}\r\n ```\r\n\r\n Example request body - Filter by location, fuel type, and minimum price\r\n ```json\r\n {\r\n   \"locationLatitude\": 51.21006,\r\n   \"locationLongitude\": 16.1619,\r\n   \"distance\": 100,\r\n   \"fuelType\": [\"LPG\"],\r\n   \"minPrice\": 5,\r\n   \"sortingByDisance\": null,\r\n   \"sortingByPrice\": null,\r\n   \"sortingDirection\": null,\r\n   \"pagging\": {\r\n     \"pageNumber\": null,\r\n     \"pageSize\": null\r\n   }\r\n }\r\n ```\r\n\r\n Example request body - Filter by location, fuel types, maximum price, and brand\r\n ```json\r\n {\r\n   \"locationLatitude\": 51.21006,\r\n   \"locationLongitude\": 16.1619,\r\n   \"distance\": 100,\r\n   \"fuelType\": [\"LPG\", \"E85\"],\r\n   \"minPrice\": null,\r\n   \"maxPrice\": 5,\r\n   \"brandName\": \"Orlen\",\r\n   \"sortingByDisance\": null,\r\n   \"sortingByPrice\": null,\r\n   \"sortingDirection\": null,\r\n   \"pagging\": {\r\n     \"pageNumber\": null,\r\n     \"pageSize\": null\r\n   }\r\n }\r\n ```\r\n\r\n Example request body - Full filters with sorting by distance (descending)\r\n ```json\r\n {\r\n   \"locationLatitude\": 51.21006,\r\n   \"locationLongitude\": 16.1619,\r\n   \"distance\": 100,\r\n   \"fuelType\": [\"LPG\", \"E85\"],\r\n   \"maxPrice\": 5,\r\n   \"brandName\": \"Orlen\",\r\n   \"sortingByDisance\": true,\r\n   \"sortingByPrice\": null,\r\n   \"sortingDirection\": \"desc\",\r\n   \"pagging\": {\r\n     \"pageNumber\": null,\r\n     \"pageSize\": null\r\n   }\r\n }\r\n ```\r\n Example request body - Full filters with sorting by distance (asceding) (basic sort direction)\r\n ```json\r\n {\r\n   \"locationLatitude\": 51.21006,\r\n   \"locationLongitude\": 16.1619,\r\n   \"distance\": 100,\r\n   \"fuelType\": [\"LPG\", \"E85\"],\r\n   \"maxPrice\": 5,\r\n   \"brandName\": \"Orlen\",\r\n   \"sortingByDisance\": true,\r\n   \"sortingByPrice\": null,\r\n   \"sortingDirection\": \"asc\",\r\n   \"pagging\": {\r\n     \"pageNumber\": null,\r\n     \"pageSize\": null\r\n   }\r\n }\r\n ```\r\n Example response\r\n ```json\r\n {\r\n   \"items\": [\r\n     {\r\n       \"brandName\": \"Orlen\",\r\n       \"street\": \"Main Street\",\r\n       \"houseNumber\": \"123\",\r\n       \"city\": \"Warsaw\",\r\n       \"postalCode\": \"00-001\",\r\n       \"latitude\": 52.2297,\r\n       \"longitude\": 21.0122,\r\n       \"fuelPrice\": [\r\n         {\r\n           \"fuelCode\": \"PB95\",\r\n           \"price\": 6.29,\r\n           \"validFrom\": \"2025-10-22T10:00:00Z\"\r\n         }\r\n       ]\r\n     }\r\n   ],\r\n   \"pageNumber\": 1,\r\n   \"pageSize\": 10,\r\n   \"totalCount\": 45,\r\n   \"totalPages\": 5,\r\n   \"hasPreviousPage\": false,\r\n   \"hasNextPage\": true\r\n }\r\n ```\r\n\r\n Filter Parameters\r\n - **locationLatitude** (optional): Latitude coordinate (-90 to 90)\r\n - **locationLongitude** (optional): Longitude coordinate (-180 to 180)\r\n - **distance** (optional): Search radius in kilometers (requires both latitude and longitude)\r\n - **fuelType** (optional): List of fuel type names (e.g., [\"PB95\", \"ON\", \"LPG\"])\r\n - **minPrice** (optional): Minimum fuel price (requires fuelType to be specified)\r\n - **maxPrice** (optional): Maximum fuel price (requires fuelType to be specified)\r\n - **brandName** (optional): Filter by station brand name (case-insensitive)\r\n\r\n Sorting Parameters\r\n - **sortingByDisance** (optional): Sort by distance from location (requires latitude and longitude)\r\n - **sortingByPrice** (optional): Sort by fuel price (requires fuelType to be specified)\r\n - **sortingDirection** (optional): Sort direction - \"asc\" (default) or \"desc\"\r\n - Note: Cannot sort by both distance and price simultaneously\r\n\r\n Pagination Parameters\r\n - **pageNumber** (optional): Page number to retrieve (default: 1, must be > 0)\r\n - **pageSize** (optional): Number of items per page (default: 10, range: 1-100)\r\n - If requested page exceeds total pages, the last available page is returned automatically\r\n\r\n Notes\r\n - All parameters are optional except pagination (which uses defaults if not provided)\r\n - Empty `fuelType` array returns all fuel types\r\n - Distance filtering uses kilometers and calculates straight-line distance\r\n - Price filtering requires at least one fuel type to be specified\r\n - Sorting by price requires at least one fuel type to be specified\r\n - Sorting by distance requires location coordinates to be provided\r\n - If no stations match the criteria, an empty result with pagination info is returned",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetStationListRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetStationListRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetStationListRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Stations retrieved successfully (may be empty if no matches found)"
+          },
+          "400": {
+            "description": "Validation error - invalid parameters provided. Common errors:\r\n- Invalid page number (must be > 0)\r\n- Invalid page size (must be between 1 and 100)\r\n- Invalid latitude (must be between -90 and 90)\r\n- Invalid longitude (must be between -180 and 180)\r\n- Invalid fuel type name\r\n- Negative price values\r\n- Invalid brand name\r\n- Conflicting sorting options (cannot sort by both price and distance)\r\n- Sorting by distance without location coordinates\r\n- Sorting or filtering by price without specifying fuel type"
+          },
+          "500": {
+            "description": "Server error — something went wrong while processing the request"
+          }
+        }
+      }
+    },
+    "/api/station/all-brands": {
+      "get": {
+        "tags": [
+          "Station"
+        ],
+        "summary": "Get all fuel station brands.",
+        "description": "Description  \r\nReturns a list of all available fuel station brands in the database.  \r\nExample response  \r\n```json\r\n[\r\n  \"Orlen\",\r\n  \"Shell\",\r\n  \"BP\",\r\n  \"Circle K\",\r\n  \"Lotos\",\r\n  ...\r\n]\r\n```\r\n            \r\nNotes  \r\n- The response contains **unique brand names** only.  \r\n- If no brands are found in the database, a `404` response is returned.",
+        "responses": {
+          "200": {
+            "description": "Brands successfully retrieved"
+          },
+          "404": {
+            "description": "No brands found"
+          },
+          "500": {
+            "description": "An unexpected server error occurred"
+          }
+        }
+      }
+    },
+    "/api/station/profile": {
+      "get": {
+        "tags": [
+          "Station"
+        ],
+        "summary": "Get detailed profile of a specific fuel station.",
+        "description": "Description  \r\nReturns complete information about a specific fuel station, including address, coordinates, brand name, and current fuel prices.  \r\nThe station is identified based on the provided information (brand, street, house number, city).  \r\n            \r\nExample request  \r\n```\r\nGET api/station/profile?BrandName=Orlen&Street=Ignacego%20Domejki&HouseNumber=1a&City=Legnica\r\n```\r\n            \r\nExample response  \r\n```\r\n{\r\n  \"brandName\": \"Orlen\",\r\n  \"street\": \"Ignacego Domejki\",\r\n  \"houseNumber\": \"1a\",\r\n  \"city\": \"Legnica\",\r\n  \"postalCode\": \"59-220\",\r\n  \"latitude\": 51.2094953,\r\n  \"longitude\": 16.1309152,\r\n  \"fuelPrice\": [\r\n    {\r\n      \"fuelCode\": \"PB95\",\r\n      \"price\": 4.56,\r\n      \"validFrom\": \"0001-01-01T00:00:00\"\r\n    },\r\n    {\r\n      \"fuelCode\": \"PB98\",\r\n      \"price\": 6.8,\r\n      \"validFrom\": \"0001-01-01T00:00:00\"\r\n    },\r\n    {\r\n      \"fuelCode\": \"LPG\",\r\n      \"price\": 6.08,\r\n      \"validFrom\": \"0001-01-01T00:00:00\"\r\n    },\r\n    {\r\n      \"fuelCode\": \"ON\",\r\n      \"price\": 4.71,\r\n      \"validFrom\": \"0001-01-01T00:00:00\"\r\n    },\r\n    {\r\n      \"fuelCode\": \"E85\",\r\n      \"price\": 5.52,\r\n      \"validFrom\": \"0001-01-01T00:00:00\"\r\n    }\r\n  ]\r\n}\r\n```\r\n            \r\nNotes  \r\n- All request parameters are required for the search (brandName, street, houseNumber, city).  \r\n- If no station matches the provided data, a 404 response is returned.  \r\n- The coordinate system used is WGS84 (latitude, longitude).  \r\n- The fuelPrice list may contain multiple entries depending on the available fuel types.  \r\n- Search is case-insensitive for all parameters.",
+        "parameters": [
+          {
+            "name": "BrandName",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Street",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "HouseNumber",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "City",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Station profile successfully retrieved"
+          },
+          "400": {
+            "description": "Validation error — one or more required parameters are missing or empty"
+          },
+          "404": {
+            "description": "No matching station found"
+          },
+          "500": {
+            "description": "Server error — something went wrong while processing the request"
+          }
+        }
+      }
+    },
+    "/api/station/price-proposal/add": {
+      "post": {
+        "tags": [
+          "Station"
+        ],
+        "summary": "Submit a new fuel price proposal with verification photo.",
+        "description": "Description  \r\nAllows authenticated users to submit a fuel price proposal for a specific gas station, including a verification photo.  \r\nThe photo is uploaded to Azurite storage and a unique proposal record is created in the database.  \r\nThe station is identified based on the provided data (brand name, street, house number, city).  \r\n            \r\nExample request (multipart/form-data)  \r\n```\r\nPOST /api/price-proposal/add\r\nContent-Type: multipart/form-data\r\n            \r\nBrandName: Orlen\r\nStreet: Ignacego Domejki\r\nHouseNumber: 1a\r\nCity: Legnica\r\nFuelType: ON\r\nProposedPrice: 6.89\r\nPhoto: [binary file: image.jpg]\r\n```\r\n            \r\nExample success response  \r\n```json\r\n{\r\n  \"message\": \"Price proposal added successfully in 1234\"\r\n}\r\n```\r\n            \r\nExample error response  \r\n```json\r\n{\r\n  \"success\": false,\r\n  \"message\": \"Validation error\",\r\n  \"errors\": [\r\n    \"Invalid photo file type. Allowed types are: JPEG, JPG, PNG, WEBP.\"\r\n  ]\r\n}\r\n```\r\n            \r\nValidation rules  \r\n- **BrandName**: Gas station brand name (e.g., Orlen, Shell, BP). Required.\r\n- **Street**: Street name where the station is located. Required.\r\n- **HouseNumber**: Street number of the station. Required.\r\n- **City**: City where the station is located. Required.\r\n- **FuelType**: Must be one of: `PB95`, `PB98`, `ON`, `LPG`, `E85`. Required.\r\n- **ProposedPrice**: Must be greater than 0, represents price in PLN per liter. Required.\r\n- **Photo**: Required, max size **5 MB**, allowed formats: **JPEG, JPG, PNG, WEBP**.\r\n            \r\nNotes  \r\n- User email is automatically retrieved from JWT token claims.\r\n- The station must exist in the database (matched by brand name, street, house number, and city).\r\n- The user must be registered and authenticated in the system.\r\n- The photo is stored in MinIO with a unique filename based on the proposal ID.\r\n- All operations are executed within a database transaction with automatic rollback on failure.\r\n- If the database save fails, the uploaded photo is automatically cleaned up from MinIO.\r\n- The proposal is initially created with status **Pending** and requires admin approval.",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "Photo"
+                ],
+                "type": "object",
+                "properties": {
+                  "BrandName": {
+                    "type": "string"
+                  },
+                  "Street": {
+                    "type": "string"
+                  },
+                  "HouseNumber": {
+                    "type": "string"
+                  },
+                  "City": {
+                    "type": "string"
+                  },
+                  "FuelTypeCode": {
+                    "type": "string"
+                  },
+                  "Photo": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "ProposedPrice": {
+                    "minimum": 0.01,
+                    "type": "number",
+                    "format": "double"
+                  }
+                }
+              },
+              "encoding": {
+                "BrandName": {
+                  "style": "form"
+                },
+                "Street": {
+                  "style": "form"
+                },
+                "HouseNumber": {
+                  "style": "form"
+                },
+                "City": {
+                  "style": "form"
+                },
+                "FuelTypeCode": {
+                  "style": "form"
+                },
+                "Photo": {
+                  "style": "form"
+                },
+                "ProposedPrice": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Price proposal successfully added"
+          },
+          "400": {
+            "description": "Validation error — invalid data format, file type, size, missing station or user"
+          },
+          "500": {
+            "description": "Server error — something went wrong while processing the request"
+          }
+        }
+      }
+    },
+    "/api/station/fuel-codes": {
+      "get": {
+        "tags": [
+          "Station"
+        ],
+        "summary": "Get all available fuel type codes.",
+        "description": "Description  \r\nReturns a list of all fuel type codes (identifiers) available in the system.  \r\nThese codes can be used for filtering stations by fuel type in other endpoints.  \r\n            \r\nExample response  \r\n```json\r\n[\r\n  \"PB95\",\r\n  \"PB98\",\r\n  \"ON\",\r\n  \"LPG\",\r\n  \"E85\"\r\n]\r\n```\r\n            \r\nNotes  \r\n- The response contains **unique fuel type codes** only.  \r\n- If no fuel types are found in the database, a `404` response is returned.",
+        "responses": {
+          "200": {
+            "description": "Fuel type codes successfully retrieved"
+          },
+          "404": {
+            "description": "No fuel type codes found in the database"
+          },
+          "500": {
+            "description": "An unexpected server error occurred"
+          }
+        }
+      }
+    },
+    "/api/station/price-proposal": {
+      "get": {
+        "tags": [
+          "Station"
+        ],
+        "summary": "Get price proposals for a specific gas station.",
+        "description": "Description  \r\nReturns a paginated list of pending price proposals submitted by users for a specific gas station.  \r\n            \r\nStation Identification  \r\nAll parameters are **required** to uniquely identify a station:\r\n- **BrandName**: The gas station brand (e.g., \"Shell\", \"BP\", \"Orlen\")\r\n- **Street**: Street name where the station is located\r\n- **HouseNumber**: Building/house number of the station\r\n- **City**: City where the station is located\r\n            \r\nPagination  \r\n- **PageNumber**: Page number to retrieve (default: 1)\r\n- **PageSize**: Number of items per page (default: 10)\r\n            \r\nExample request  \r\n```\r\nGET /api/station/price-proposal?BrandName=Shell&Street=aleja%20Aleksandra%20Brücknera&HouseNumber=53&City=Wrocław&PageNumber=1&PageSize=10\r\n```\r\n            \r\nExample response  \r\n```json\r\n{\r\n  \"isSuccess\": true,\r\n  \"data\": {\r\n    \"items\": [\r\n      {\r\n        \"userName\": \"User4\",\r\n        \"fuelCode\": \"PB95\",\r\n        \"proposedPrice\": 6.47,\r\n        \"createdAt\": \"2025-10-28T17:21:39.810956Z\"\r\n      },\r\n      {\r\n        \"userName\": \"User5\",\r\n        \"fuelCode\": \"E85\",\r\n        \"proposedPrice\": 6.71,\r\n        \"createdAt\": \"2025-11-06T17:21:39.811112Z\"\r\n      }\r\n    ],\r\n    \"pageNumber\": 1,\r\n    \"pageSize\": 10,\r\n    \"totalCount\": 5,\r\n    \"totalPages\": 1,\r\n    \"hasPreviousPage\": false,\r\n    \"hasNextPage\": false\r\n  },\r\n  \"message\": \"price proposals retrieved successfully\",\r\n  \"statusCode\": 200,\r\n  \"errors\": null\r\n}\r\n```\r\n            \r\nNotes  \r\n- If the station is not found, an empty result set is returned with `totalCount: 0`.\r\n- Price proposals include the username of the submitter, fuel type code, proposed price, and submission timestamp.",
+        "parameters": [
+          {
+            "name": "BrandName",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Street",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "HouseNumber",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "City",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "PageNumber",
+            "in": "query",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Price proposals successfully retrieved (may be empty if station not found)"
+          },
+          "500": {
+            "description": "An unexpected server error occurred"
+          }
+        }
+      }
+    },
+    "/api/station/fuel-price/history": {
+      "get": {
+        "tags": [
+          "Station"
+        ],
+        "summary": "Get fuel price history for a specific gas station.",
+        "description": "Description  \r\nReturns the complete price history for all fuel types or a specific fuel type at a given gas station.  \r\n            \r\nStation Identification  \r\nAll parameters are **required** to uniquely identify a station:\r\n- **BrandName**: The gas station brand (e.g., \"Shell\", \"BP\", \"Orlen\")\r\n- **Street**: Street name where the station is located\r\n- **HouseNumber**: Building/house number of the station\r\n- **City**: City where the station is located\r\n            \r\nFuel Type Filter (Optional)  \r\n- **fuelCode**: Fuel type code (e.g., \"PB95\", \"ON\", \"LPG\"). If omitted, returns history for all fuel types available at the station.\r\n            \r\nExample requests  \r\n```\r\n# Get history for all fuels\r\nGET /api/station/fuel-price/history?BrandName=Shell&Street=Marszałkowska&HouseNumber=1&City=Warszawa\r\n            \r\n# Get history for specific fuel\r\nGET /api/station/fuel-price/history?BrandName=Shell&Street=Marszałkowska&HouseNumber=1&City=Warszawa&fuelCode=PB95\r\n```\r\n            \r\nExample response (single fuel)  \r\n```json\r\n{\r\n  \"isSuccess\": true,\r\n  \"data\": {\r\n    \"fuelType\": \"Benzyna 95\",\r\n    \"fuelCode\": \"PB95\",\r\n    \"validFrom\": [\r\n      \"2024-10-05T12:00:00Z\",\r\n      \"2024-11-10T08:00:00Z\",\r\n      \"2024-12-20T10:30:00Z\"\r\n    ],\r\n    \"validTo\": [\r\n      \"2024-11-10T08:00:00Z\",\r\n      \"2024-12-20T10:30:00Z\",\r\n      null\r\n    ],\r\n    \"price\": [\r\n      6.40,\r\n      6.50,\r\n      6.80\r\n    ]\r\n  },\r\n  \"message\": \"Fuel price history retrieved successfully.\",\r\n  \"statusCode\": 200,\r\n  \"errors\": null\r\n}\r\n```\r\n            \r\nExample response (all fuels)  \r\n```json\r\n{\r\n  \"isSuccess\": true,\r\n  \"data\": [\r\n    {\r\n      \"fuelType\": \"Benzyna 95\",\r\n      \"fuelCode\": \"PB95\",\r\n      \"validFrom\": [\"2024-10-05T12:00:00Z\", \"2024-12-20T10:30:00Z\"],\r\n      \"validTo\": [\"2024-12-20T10:30:00Z\", null],\r\n      \"price\": [6.40, 6.80]\r\n    },\r\n    {\r\n      \"fuelType\": \"Diesel\",\r\n      \"fuelCode\": \"ON\",\r\n      \"validFrom\": [\"2024-10-05T12:00:00Z\"],\r\n      \"validTo\": [null],\r\n      \"price\": [6.20]\r\n    }\r\n  ],\r\n  \"message\": \"Fuel price history retrieved successfully.\",\r\n  \"statusCode\": 200,\r\n  \"errors\": null\r\n}\r\n```\r\n            \r\nNotes  \r\n- The arrays `validFrom`, `validTo`, and `price` have matching indices (e.g., `price[0]` corresponds to `validFrom[0]` and `validTo[0]`).\r\n- A `null` value in `validTo` indicates the current active price.\r\n- Prices are sorted chronologically from oldest to newest.\r\n- Perfect for generating price history charts and graphs.",
+        "parameters": [
+          {
+            "name": "BrandName",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Street",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "HouseNumber",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "City",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fuelCode",
+            "in": "query",
+            "description": "Optional fuel type code to filter history for a specific fuel (e.g., \"PB95\", \"ON\")",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Fuel price history successfully retrieved"
+          },
+          "400": {
+            "description": "Invalid fuel type code provided"
+          },
+          "404": {
+            "description": "Station not found or no price history available"
+          },
+          "500": {
+            "description": "An unexpected server error occurred"
+          }
+        }
+      }
+    },
+    "/api/admin/station/list": {
+      "get": {
+        "tags": [
+          "Station"
+        ],
+        "summary": "Retrieve a paginated, searchable, and sortable list of fuel stations for administrators.",
+        "description": "Returns a list of fuel stations with related address details (street, house number, city, postal code)  \r\nand brand information. Supports **search**, **sorting**, and **pagination** to help administrators  \r\nefficiently manage stations in the admin panel.\r\n            \r\nExample request  \r\n```http\r\nGET /api/admin/station/list?Search=Warszawa&PageNumber=1&PageSize=10&SortBy=brandname&SortDirection=asc\r\n```\r\n            \r\nExample response — Successful retrieval  \r\n```json\r\n{\r\n  \"items\": [\r\n    {\r\n      \"brandName\": \"Orlen\",\r\n      \"street\": \"Puławska\",\r\n      \"houseNumber\": \"12A\",\r\n      \"city\": \"Warszawa\",\r\n      \"postalCode\": \"02-512\",\r\n      \"createdAt\": \"2025-11-06T12:14:23.569787Z\",\r\n      \"updatedAt\": \"2025-11-06T12:14:23.569787Z\"\r\n    },\r\n    {\r\n      \"brandName\": \"BP\",\r\n      \"street\": \"Beskidzka\",\r\n      \"houseNumber\": \"15\",\r\n      \"city\": \"Kraków\",\r\n      \"postalCode\": \"30-611\",\r\n      \"createdAt\": \"2025-11-06T12:15:11.219Z\",\r\n      \"updatedAt\": \"2025-11-06T12:15:11.219Z\"\r\n    }\r\n  ],\r\n  \"pageNumber\": 1,\r\n  \"pageSize\": 10,\r\n  \"totalCount\": 2,\r\n  \"totalPages\": 1\r\n}\r\n```\r\n            \r\nExample response — No stations found  \r\n```json\r\n{\r\n  \"items\": [],\r\n  \"pageNumber\": 1,\r\n  \"pageSize\": 10,\r\n  \"totalCount\": 0,\r\n  \"totalPages\": 0\r\n}\r\n```\r\n            \r\nExample response — Server error  \r\n```json\r\n{\r\n  \"success\": false,\r\n  \"message\": \"An error occurred while processing your request.\",\r\n  \"errors\": [ \"Object reference not set to an instance of an object.\" ],\r\n  \"data\": null\r\n}\r\n```\r\n            \r\nNotes  \r\n- `Search` — optional query parameter; filters by brand name, street, city, or postal code.  \r\n- `SortBy` — optional query parameter; accepts one of: `brandname`, `street`, `housenumber`, `city`, `postalcode`, `createdat`, `updatedat`.  \r\n- `SortDirection` — optional query parameter; accepts `asc` or `desc` (default: ascending).  \r\n- `PageNumber` and `PageSize` — control pagination (default: 1 and 10 respectively).",
+        "parameters": [
+          {
+            "name": "PageNumber",
+            "in": "query",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "SortBy",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "SortDirection",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Stations retrieved successfully (even if list is empty)"
+          },
+          "400": {
+            "description": "Invalid pagination or query parameters"
+          },
+          "500": {
+            "description": "Server error while retrieving station list"
+          }
+        }
+      }
+    },
+    "/api/admin/station/edit": {
+      "patch": {
+        "tags": [
+          "Station"
+        ],
+        "summary": "Edits an existing fuel station's details",
+        "description": "Updates station information including brand, address, location coordinates, and fuel prices.\r\nAll fields except FindStation are optional - only provided fields will be updated.\r\n\r\nSample request:\r\n\r\n    PUT /api/admin/station/edit\r\n    {\r\n      \"findStation\": {\r\n        \"brandName\": \"Orlen\",\r\n        \"street\": \"Główna\",\r\n        \"houseNumber\": \"1a\",\r\n        \"city\": \"Warszawa\"\r\n      },\r\n      \"newBrandName\": \"Shell\",\r\n      \"newStreet\": \"Nowa\",\r\n      \"newHouseNumber\": \"5b\",\r\n      \"newCity\": \"Kraków\",\r\n      \"newPostalCode\": \"11-111\",\r\n      \"newLatitude\": 50.0647,\r\n      \"newLongitude\": 19.9450,\r\n      \"fuelType\": [\r\n        {\r\n          \"code\": \"PB95\",\r\n          \"price\": 6.50\r\n        },\r\n        {\r\n          \"code\": \"ON\",\r\n          \"price\": 6.80\r\n        }\r\n      ]\r\n    }\r\n    \r\n**Partial Updates:**\r\n- You can update only specific fields by omitting others\r\n- Example: Send only \"newStreet\" to update street while keeping other data unchanged\r\n- Location coordinates require both latitude AND longitude\r\n- Fuel types: provided list will replace existing fuels (add new, update prices, remove unlisted)",
+        "requestBody": {
+          "description": "Station edit request containing search criteria and new values",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditStationRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditStationRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditStationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Station updated successfully"
+          },
+          "400": {
+            "description": "Validation error (invalid brand name or station not found)"
+          },
+          "401": {
+            "description": "Unauthorized - valid JWT token required"
+          },
+          "403": {
+            "description": "Forbidden - Admin role required"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/admin/station/edit/info": {
+      "get": {
+        "tags": [
+          "Station"
+        ],
+        "summary": "Retrieves station information for editing purposes",
+        "description": "Gets complete station details including brand, address, location coordinates, and current fuel prices.\r\nThis endpoint is typically used to populate an edit form with existing station data.\r\nStation is identified by brand name, street, house number, and city.\r\n\r\nSample request:\r\n\r\n    GET /api/admin/station/edit/info?BrandName=Orlen&Street=Główna&HouseNumber=15A&City=Warszawa\r\n    \r\nSample response:\r\n\r\n    {\r\n      \"success\": true,\r\n      \"message\": \"Station info retrieved successfully.\",\r\n      \"data\": {\r\n        \"BrandName\": \"Orlen\",\r\n        \"Street\": \"Główna\",\r\n        \"HouseNumber\": \"15A\",\r\n        \"City\": \"Warszawa\",\r\n        \"Latitude\": 52.2297,\r\n        \"Longitude\": 21.0122,\r\n        \"fuelType\": [\r\n          {\r\n            \"code\": \"PB95\",\r\n            \"price\": 6.50\r\n          },\r\n          {\r\n            \"code\": \"PB98\",\r\n            \"price\": 7.20\r\n          },\r\n          {\r\n            \"code\": \"ON\",\r\n            \"price\": 6.80\r\n          },\r\n          {\r\n            \"code\": \"LPG\",\r\n            \"price\": 3.20\r\n          }\r\n        ]\r\n      }\r\n    }\r\n    \r\n**Use Case:**\r\n- Call this endpoint before showing edit form to get current station data\r\n- Use the returned data to pre-fill form fields\r\n- User can then modify any fields and submit via PUT /api/admin/station/edit/{stationId}\r\n\r\n**Response Fields:**\r\n- All fields represent current station data\r\n- Field names match the edit request format for easy form binding\r\n- FuelType array contains all currently available fuels at the station",
+        "parameters": [
+          {
+            "name": "BrandName",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Street",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "HouseNumber",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "City",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Station information retrieved successfully"
+          },
+          "404": {
+            "description": "Station not found with the provided criteria"
+          },
+          "400": {
+            "description": "Invalid request parameters"
+          },
+          "401": {
+            "description": "Unauthorized - valid JWT token required"
+          },
+          "403": {
+            "description": "Forbidden - Admin role required"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/admin/station/add": {
+      "post": {
+        "tags": [
+          "Station"
+        ],
+        "summary": "Adds a new fuel station to the system",
+        "description": "Creates a new fuel station with specified brand, address, location coordinates, and fuel prices.\r\nAll fields are required. You can add multiple fuel types by including them in the fuelTypes array.\r\n\r\nSample request:\r\n\r\n    POST /api/admin/station/add\r\n    {\r\n      \"brandName\": \"Orlen\",\r\n      \"street\": \"Główna\",\r\n      \"houseNumber\": \"15A\",\r\n      \"city\": \"Warszawa\",\r\n      \"postalCode\": \"00-001\"\r\n      \"latitude\": 52.2297,\r\n      \"longitude\": 21.0122,\r\n      \"fuelTypes\": [\r\n        {\r\n          \"code\": \"PB95\",\r\n          \"price\": 6.50\r\n        },\r\n        {\r\n          \"code\": \"PB98\",\r\n          \"price\": 7.20\r\n        },\r\n        {\r\n          \"code\": \"ON\",\r\n          \"price\": 6.80\r\n        },\r\n        {\r\n          \"code\": \"LPG\",\r\n          \"price\": 3.20\r\n        }\r\n      ]\r\n    }\r\n    \r\n**Important Notes:**\r\n- Brand name must exist in the system (e.g., \"Orlen\", \"Shell\", \"BP\", \"Circle K\")\r\n- At least one fuel type is required\r\n- Fuel type codes must be valid (e.g., \"PB95\", \"PB98\", \"ON\", \"LPG\")\r\n- You can add as many fuel types as needed \r\n- Coordinates must be valid GPS coordinates (latitude: -90 to 90, longitude: -180 to 180)\r\n- All fuel prices must be greater than 0.01",
+        "requestBody": {
+          "description": "Station details including brand, address, location, and fuel prices",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddStationRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddStationRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddStationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Station created successfully"
+          },
+          "400": {
+            "description": "Validation error (invalid brand name, fuel types, or missing required fields)"
+          },
+          "401": {
+            "description": "Unauthorized - valid JWT token required"
+          },
+          "403": {
+            "description": "Forbidden - Admin role required"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/admin/station/delete": {
+      "delete": {
+        "tags": [
+          "Station"
+        ],
+        "summary": "Deletes an existing fuel station from the system",
+        "description": "Removes a fuel station identified by brand name and address details.\r\nThis operation will cascade delete all associated data including:\r\n- Station address\r\n- All fuel prices for this station\r\n- All price proposals for this station\r\n\r\nSample request:\r\n\r\n    DELETE /api/admin/station/delete\r\n    {\r\n      \"brandName\": \"A-Prim\",\r\n      \"street\": \"Beskidzka\",\r\n      \"houseNumber\": \"15\",\r\n      \"city\": \"Grojec\"\r\n    }\r\n    \r\n**Important Notes:**\r\n- All fields are required to uniquely identify the station\r\n- Brand name and address must match exactly (case-insensitive)\r\n- This operation is irreversible - all related data will be permanently deleted\r\n- Deleting a station will automatically remove:\r\n  * The station's address\r\n  * All fuel prices associated with this station\r\n  * All price proposals submitted for this station",
+        "requestBody": {
+          "description": "Station identification details (brand name and full address)",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FindStationRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FindStationRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/FindStationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Station deleted successfully"
+          },
+          "400": {
+            "description": "Station not found with provided details"
+          },
+          "401": {
+            "description": "Unauthorized - valid JWT token required"
+          },
+          "403": {
+            "description": "Forbidden - Admin role required"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/admin/station/fuel-type/assign": {
+      "post": {
+        "tags": [
+          "Station"
+        ],
+        "summary": "Assigns a fuel type to a station with a specified price",
+        "description": "Creates a new fuel price entry that associates a fuel type with a station.\r\nThis establishes that the station offers this particular type of fuel at the given price.\r\n\r\nSample request:\r\n\r\n    POST api/admin/station/fuel-type/assign\r\n    {\r\n      \"station\": {\r\n        \"brandName\": \"Orlen\",\r\n        \"street\": \"Marszałkowska\",\r\n        \"houseNumber\": \"10\",\r\n        \"city\": \"Warszawa\"\r\n      },\r\n      \"code\": \"PB95\",\r\n      \"price\": 6.49\r\n    }\r\n    \r\n**Important Notes:**\r\n- All fields are required to properly identify the station and fuel type\r\n- Station must exist in the system (matched by brand name and full address)\r\n- Fuel type must exist in the system (matched by code, e.g., \"PB95\", \"ON\", \"LPG\")\r\n- Price must be greater than zero (minimum 0.01)\r\n- If the fuel type is already assigned to this station, the operation will fail\r\n- Brand name and address matching is case-insensitive\r\n- After successful assignment, station and fuel type caches will be invalidated\r\n\r\n**Common fuel type codes:**\r\n- PB95 - Unleaded 95 octane\r\n- PB98 - Unleaded 98 octane\r\n- ON - Diesel\r\n- LPG - Liquefied petroleum gas\r\n- E85 - Ethanol fuel blend",
+        "requestBody": {
+          "description": "Contains station identification details, fuel type code, and initial price",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ManageStationFuelPriceRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ManageStationFuelPriceRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ManageStationFuelPriceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Fuel type assigned to station successfully"
+          },
+          "400": {
+            "description": "Bad request - possible reasons:\r\n- Fuel type already assigned to this station\r\n- Invalid price value\r\n- Validation errors in request data"
+          },
+          "404": {
+            "description": "Not found - possible reasons:\r\n- Station not found with provided details\r\n- Fuel type not found with provided code"
+          },
+          "401": {
+            "description": "Unauthorized - valid JWT token required"
+          },
+          "403": {
+            "description": "Forbidden - Admin role required"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/admin/station/fuel-type": {
+      "get": {
+        "tags": [
+          "Station"
+        ],
+        "summary": "Retrieves all fuel types and their prices available at a specific station",
+        "description": "Returns a list of all fuel types offered at the specified station along with their current prices and validity dates.\r\nStation is identified by brand name and complete address details provided as query parameters.\r\n\r\nSample request:\r\n\r\n    GET /api/admin/station/fuel-type?BrandName=Orlen&Street=Marszałkowska&HouseNumber=10&City=Warszawa\r\n    \r\nSample response:\r\n\r\n    {\r\n      \"success\": true,\r\n      \"message\": \"Fuel prices retrieved successfully.\",\r\n      \"data\": [\r\n        {\r\n          \"fuelCode\": \"PB95\",\r\n          \"price\": 6.49,\r\n          \"validFrom\": \"2024-11-28T10:30:00Z\"\r\n        },\r\n        {\r\n          \"fuelCode\": \"ON\",\r\n          \"price\": 6.29,\r\n          \"validFrom\": \"2024-11-28T10:30:00Z\"\r\n        },\r\n        {\r\n          \"fuelCode\": \"LPG\",\r\n          \"price\": 3.15,\r\n          \"validFrom\": \"2024-11-27T14:20:00Z\"\r\n        }\r\n      ]\r\n    }\r\n    \r\n**Important Notes:**\r\n- All query parameters are required to uniquely identify the station\r\n- Brand name and address matching is case-insensitive\r\n- Returns only fuel types that have been explicitly assigned to this station\r\n- If a station doesn't offer any fuel types yet, you'll receive a 404 response\r\n- ValidFrom indicates when the current price became effective\r\n- Prices are returned with 2 decimal precision\r\n\r\n**Query Parameters:**\r\n- **BrandName**: The name of the fuel station brand (e.g., \"Orlen\", \"BP\", \"Shell\")\r\n- **Street**: Street name where the station is located\r\n- **HouseNumber**: Building/house number of the station\r\n- **City**: City where the station is located",
+        "parameters": [
+          {
+            "name": "BrandName",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Street",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "HouseNumber",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "City",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Fuel prices retrieved successfully - returns list of available fuel types"
+          },
+          "404": {
+            "description": "Not found - possible reasons:\r\n- Station not found with provided details\r\n- Station exists but has no fuel types assigned yet"
+          },
+          "400": {
+            "description": "Bad request - missing or invalid query parameters"
+          },
+          "401": {
+            "description": "Unauthorized - valid JWT token required"
+          },
+          "403": {
+            "description": "Forbidden - Admin role required"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/admin/station/fuel-type/change-price": {
+      "patch": {
+        "tags": [
+          "Station"
+        ],
+        "summary": "Updates the price of an existing fuel type at a specific station",
+        "description": "Changes the current price for a fuel type that is already assigned to the specified station.\r\nThe fuel type must be previously assigned to this station - use the assign endpoint first if needed.\r\n\r\nSample request:\r\n\r\n    PATCH /api/admin/station/fuel-type/change-price\r\n    {\r\n      \"station\": {\r\n        \"brandName\": \"Orlen\",\r\n        \"street\": \"Marszałkowska\",\r\n        \"houseNumber\": \"10\",\r\n        \"city\": \"Warszawa\"\r\n      },\r\n      \"code\": \"PB95\",\r\n      \"price\": 6.59\r\n    }\r\n    \r\nSample success response (200):\r\n\r\n    {\r\n      \"success\": true,\r\n      \"message\": \"Fuel price changed successfully for the station.\",\r\n      \"data\": true\r\n    }\r\n    \r\nSample error response (404 - fuel type not assigned):\r\n\r\n    {\r\n      \"success\": false,\r\n      \"message\": \"Failed to change fuel price for the station.\",\r\n      \"errors\": [\r\n        \"Could not change the fuel price for the station.\"\r\n      ],\r\n      \"data\": false\r\n    }\r\n    \r\n**Important Notes:**\r\n- The fuel type must already be assigned to this station before you can update its price\r\n- If the fuel type is not assigned to the station, you'll receive a 400 error\r\n- To assign a new fuel type, use POST /api/admin/station/assign-fuel-type first\r\n- All station identification fields (brandName, street, houseNumber, city) are required\r\n- Station and fuel type must exist in the system\r\n- Price must be greater than zero (minimum 0.01)\r\n- The ValidFrom timestamp will be set to the current UTC time when price is updated\r\n- Station and fuel price caches will be automatically invalidated after successful update\r\n\r\n**Common fuel type codes:**\r\n- PB95 - Unleaded 95 octane\r\n- PB98 - Unleaded 98 octane\r\n- ON - Diesel\r\n- LPG - Liquefied petroleum gas\r\n- E85 - Ethanol fuel blend\r\n\r\n**Workflow:**\r\n1. First assign fuel type to station: POST /assign-fuel-type\r\n2. Then update prices as needed: PATCH /change-price\r\n3. Users will see updated prices immediately after cache refresh",
+        "requestBody": {
+          "description": "Contains station identification, fuel type code, and new price",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ManageStationFuelPriceRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ManageStationFuelPriceRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ManageStationFuelPriceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Fuel price updated successfully - price change is now effective"
+          },
+          "400": {
+            "description": "Bad request - possible reasons:\r\n- Fuel type is not assigned to this station (assign it first)\r\n- Invalid price value (must be greater than zero)\r\n- Validation errors in request data"
+          },
+          "404": {
+            "description": "Not found - possible reasons:\r\n- Station not found with the provided details\r\n- Fuel type not found with the provided code"
+          },
+          "401": {
+            "description": "Unauthorized - valid JWT token required"
+          },
+          "403": {
+            "description": "Forbidden - Admin role required"
+          },
+          "500": {
+            "description": "Internal server error occurred during processing"
+          }
+        }
+      }
+    },
+    "/api/user/change-name": {
+      "patch": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Change the username for the currently authenticated user.",
+        "description": "Description: Updates the username for the authenticated user. The user's email is automatically extracted from the JWT token.\r\n            \r\nExample request:\r\n```http\r\nPOST /api/user/change-name?userName=NewUsername\r\n```\r\n            \r\nExample response (success):\r\n```json\r\n{\r\n  \"success\": true,\r\n  \"message\": \"UserName changed successfully.\",\r\n  \"data\": true\r\n}\r\n```\r\n            \r\nExample response (error):\r\n```json\r\n{\r\n  \"success\": false,\r\n  \"message\": \"Failed to change UserName.\",\r\n  \"errors\": [\"Validation error details\"]\r\n}\r\n```\r\n            \r\nNotes:\r\n- User email is automatically retrieved from JWT token claims.\r\n- Both User and Admin roles have access to this endpoint.\r\n- Username must not be empty or whitespace only.\r\n- The normalized username (uppercase) is also updated automatically.",
+        "parameters": [
+          {
+            "name": "userName",
+            "in": "query",
+            "description": "New username to set for the authenticated user",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Username successfully changed"
+          },
+          "400": {
+            "description": "Validation error - userName is null, empty, or whitespace"
+          },
+          "401": {
+            "description": "User not authenticated or email not found in token"
+          },
+          "500": {
+            "description": "Failed to change username or unexpected server error"
+          }
+        }
+      }
+    },
+    "/api/user/change-email": {
+      "patch": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Change the email address for the currently authenticated user.",
+        "description": "Description: Updates the email address for the authenticated user. The user's current email is automatically extracted from the JWT token.\r\n            \r\nExample request:\r\n```http\r\nPOST /api/user/change-email?newEmail=newemail@example.com\r\n```\r\n            \r\nExample response (success):\r\n```json\r\n{\r\n  \"success\": true,\r\n  \"message\": \"Email changed successfully.\"\r\n}\r\n```\r\n            \r\nExample response (error - email already exists):\r\n```json\r\n{\r\n  \"success\": false,\r\n  \"message\": \"User with this email newemail@example.com already exists\",\r\n  \"errors\": [\"UserAlreadyExist\"]\r\n}\r\n```\r\n            \r\nExample response (error - user not found):\r\n```json\r\n{\r\n  \"success\": false,\r\n  \"message\": \"User with this email user@example.com doesn't exist\",\r\n  \"errors\": [\"UserDoNotExist\"]\r\n}\r\n```\r\n            \r\nNotes:\r\n- User's current email is automatically retrieved from JWT token claims.\r\n- New email must be in valid email format.\r\n- New email must be different from the current email.\r\n- The normalized email (uppercase) is also updated automatically.\r\n- Email must not be already registered by another user.",
+        "parameters": [
+          {
+            "name": "newEmail",
+            "in": "query",
+            "description": "New email address to set for the authenticated user",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "email"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Email successfully changed"
+          },
+          "400": {
+            "description": "Validation error - email format is invalid or required"
+          },
+          "401": {
+            "description": "User not authenticated or email not found in token"
+          },
+          "404": {
+            "description": "User with the current email doesn't exist"
+          },
+          "409": {
+            "description": "Email already in use by another user"
+          },
+          "500": {
+            "description": "Failed to change email or unexpected server error"
+          }
+        }
+      }
+    },
+    "/api/user/change-password": {
+      "patch": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Change the password for the currently authenticated user.",
+        "description": "Description: Updates the password for the authenticated user. The user's email is automatically extracted from the JWT token. User must provide their current password for verification.\r\n            \r\nExample request:\r\n```http\r\nPOST /api/user/change-password\r\n{\r\n  \"currentPassword\": \"OldPass123!\",\r\n  \"newPassword\": \"NewPass456!\",\r\n  \"confirmNewPassword\": \"NewPass456!\"\r\n}\r\n```\r\n            \r\nExample response (success):\r\n```json\r\n{\r\n  \"success\": true,\r\n  \"message\": \"Password changed successfully.\"\r\n}\r\n```\r\n            \r\nExample response (error - incorrect current password):\r\n```json\r\n{\r\n  \"success\": false,\r\n  \"message\": \"Current password is incorrect\",\r\n  \"errors\": [\"IncorrectCurrentPassword\"]\r\n}\r\n```\r\n            \r\nExample response (error - passwords do not match):\r\n```json\r\n{\r\n  \"success\": false,\r\n  \"message\": \"Validation error\",\r\n  \"errors\": [\"Passwords do not match\"]\r\n}\r\n```\r\n            \r\nNotes:\r\n- User's email is automatically retrieved from JWT token claims.\r\n- Current password must be correct for verification.\r\n- New password must be at least 6 characters long.\r\n- New password must contain at least one uppercase letter, one number, and one special character.\r\n- New password and confirm password must match.",
+        "requestBody": {
+          "description": "Password change request containing current password, new password, and confirmation",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password successfully changed"
+          },
+          "400": {
+            "description": "Validation error - passwords don't match, incorrect current password, or password requirements not met"
+          },
+          "401": {
+            "description": "User not authenticated or email not found in token"
+          },
+          "404": {
+            "description": "User with the email doesn't exist"
+          },
+          "500": {
+            "description": "Failed to change password or unexpected server error"
+          }
+        }
+      }
+    },
+    "/api/user/delete": {
+      "delete": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Delete the currently authenticated user's account.",
+        "description": "Description: Permanently deletes the authenticated user's account. This action cannot be undone. User must provide and confirm their password for verification.\r\n            \r\nExample request:\r\n```http\r\nDELETE /api/user/delete\r\nContent-Type: application/json\r\n            \r\n{\r\n  \"password\": \"MyPassword123!\",\r\n  \"confirmPassword\": \"MyPassword123!\"\r\n}\r\n```\r\n            \r\nExample response (success):\r\n```json\r\n{\r\n  \"success\": true,\r\n  \"message\": \"User deleted successfully.\"\r\n}\r\n```\r\n            \r\nExample response (error - passwords don't match):\r\n```json\r\n{\r\n  \"success\": false,\r\n  \"message\": \"Password and confirm password do not match\",\r\n  \"errors\": [\"PasswordMismatch\"]\r\n}\r\n```\r\n            \r\nExample response (error - incorrect password):\r\n```json\r\n{\r\n  \"success\": false,\r\n  \"message\": \"Current password is incorrect\",\r\n  \"errors\": [\"IncorrectCurrentPassword\"]\r\n}\r\n```\r\n            \r\nExample response (error - user not found):\r\n```json\r\n{\r\n  \"success\": false,\r\n  \"message\": \"User with this email user@example.com doesn't exist\",\r\n  \"errors\": [\"UserDoNotExist\"]\r\n}\r\n```\r\n            \r\nNotes:\r\n- User's email is automatically retrieved from JWT token claims.\r\n- Password and confirm password must match.\r\n- Password verification is required for security.\r\n- This action is permanent and cannot be undone.\r\n- All user data will be removed from the system.",
+        "requestBody": {
+          "description": "Delete account request containing password and confirmation",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteAccountRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteAccountRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteAccountRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Account successfully deleted"
+          },
+          "400": {
+            "description": "Validation error - passwords don't match, incorrect password, or confirm password required"
+          },
+          "401": {
+            "description": "User not authenticated or email not found in token"
+          },
+          "404": {
+            "description": "User with the email doesn't exist"
+          },
+          "500": {
+            "description": "Failed to delete account or unexpected server error"
+          }
+        }
+      }
+    },
+    "/api/user/report": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Report another user for inappropriate behavior or content.",
+        "description": "**Description:**  \r\nCreates a new user report record in the system.  \r\nThe email of the reporting user (notifier) is automatically extracted from the JWT token.  \r\nThe report contains the user name of the reported user and a detailed description of the reason.\r\n            \r\n**Example request:**\r\n```http\r\nPOST /api/user/report\r\n            \r\n{\r\n  \"reportedUserName\": \"user2\",\r\n  \"reason\": \"User has been repeatedly sending spam messages in chat rooms for the past few days.\"\r\n}\r\n```\r\n            \r\n**Example response (success):**\r\n```json\r\n{\r\n  \"success\": true,\r\n  \"message\": \"User reported successfully\",\r\n  \"data\": true\r\n}\r\n```\r\n            \r\n**Example response (error - user tries to report themselves):**\r\n```json\r\n{\r\n  \"success\": false,\r\n  \"message\": \"You cannot report yourself\",\r\n  \"errors\": [\"ValidationError\"]\r\n}\r\n```\r\n            \r\n**Example response (error - reported user not found):**\r\n```json\r\n{\r\n  \"success\": false,\r\n  \"message\": \"Reported user not found\",\r\n  \"errors\": [\"NotFound\"]\r\n}\r\n```\r\n            \r\n**Example response (error - unauthorized):**\r\n```json\r\n{\r\n  \"success\": false,\r\n  \"message\": \"User not authenticated\",\r\n  \"errors\": [\"Unauthorized\"]\r\n}\r\n```\r\n            \r\n**Notes:**\r\n- The notifier's email is automatically extracted from the JWT token (no need to send it manually).\r\n- The `reason` field must be between **50 and 1000 characters** long and describe the reason for reporting.\r\n- Reports about administrators are automatically rejected.\r\n- A user cannot report themselves.\r\n- The report is stored with the status **Pending** until reviewed by an administrator.",
+        "requestBody": {
+          "description": "The report request containing the reported user's email and a description of the reason.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Report successfully created."
+          },
+          "400": {
+            "description": "Validation error — missing fields, invalid email format, or self-report attempt."
+          },
+          "401": {
+            "description": "User not authenticated or missing JWT token."
+          },
+          "404": {
+            "description": "Reported user or notifier not found."
+          },
+          "500": {
+            "description": "Internal server error or database operation failed."
+          }
+        }
+      }
+    },
+    "/api/admin/user/list": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Retrieves a paginated and filterable list of users",
+        "description": "Returns a complete list of users (non-deleted) with their assigned roles, creation dates, and ban status.\r\nSupports searching, sorting, and pagination for admin management purposes.\r\n\r\n**Features:**\r\n- Filter users by username, email, or role name\r\n- Sort by username, email, role, creation date, or ban status\r\n- Paginate results using `PageNumber` and `PageSize`\r\n- Automatically displays ban status for each user\r\n\r\n**Sample Request:**\r\n\r\n    GET /api/admin/user/list?Search=user&SortBy=roles&SortDirection=asc&PageNumber=1&PageSize=10\r\n\r\n**Sample Response:**\r\n\r\n    {\r\n      \"success\": true,\r\n      \"message\": \"Users retrieved successfully\",\r\n      \"data\": {\r\n        \"items\": [\r\n          {\r\n            \"userName\": \"Admin\",\r\n            \"email\": \"admin@example.pl\",\r\n            \"roles\": \"Admin\",\r\n            \"createdAt\": \"2025-11-07T14:38:54.705875Z\",\r\n            \"isBanned\": false\r\n          },\r\n          {\r\n            \"userName\": \"User1\",\r\n            \"email\": \"user1@example.pl\",\r\n            \"roles\": \"User\",\r\n            \"createdAt\": \"2025-11-07T14:38:55.153691Z\",\r\n            \"isBanned\": true\r\n          }\r\n        ],\r\n        \"pageNumber\": 1,\r\n        \"pageSize\": 10,\r\n        \"totalCount\": 2,\r\n        \"totalPages\": 1,\r\n        \"hasPreviousPage\": false,\r\n        \"hasNextPage\": false\r\n      }\r\n    }\r\n\r\n\r\n**Supported Sorting Fields:**\r\n- `username` → alphabetical order\r\n- `email` → alphabetical order\r\n- `roles` or `role` → by role priority (Admin > User)\r\n- `createdAt` or `created` → by account creation date\r\n- `isBanned`, `banned`, or `ban` → banned users first/last (with secondary sort by username)\r\n\r\n**Default Sorting:**\r\n- When no `SortBy` is specified, users are sorted by role priority (Admin first) then by username\r\n\r\n**Pagination Behavior:**\r\n- If requested page number exceeds total pages, automatically returns the last available page\r\n- Returns empty result set with appropriate metadata if no users are found\r\n- Page numbers and sizes default to 1 and 10 respectively if not specified",
+        "parameters": [
+          {
+            "name": "PageNumber",
+            "in": "query",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "SortBy",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "SortDirection",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Users retrieved successfully (including empty result sets)"
+          },
+          "400": {
+            "description": "Invalid query parameters"
+          },
+          "401": {
+            "description": "Unauthorized - valid JWT token required"
+          },
+          "403": {
+            "description": "Forbidden - Admin role required"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/admin/user/change-role": {
+      "patch": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Changes the role of an existing user.",
+        "description": "Allows an administrator to promote or demote a user between available roles.\r\nCurrently, the system supports two roles: `User` and `Admin`.\r\n\r\nWhen changing a role:\r\n- Promoting a user to `Admin` automatically removes the `User` role.\r\n- Demoting an admin to `User` automatically removes the `Admin` role.\r\n\r\n**Sample request:**\r\n\r\n    PUT /api/admin/user/change-role?email=user@example.pl&newRole=Admin\r\n\r\n**Sample success response (200 OK):**\r\n\r\n    {\r\n      \"success\": true,\r\n      \"message\": \"Role changed successfully to Admin.\",\r\n      \"data\": {\r\n        \"succeeded\": true,\r\n        \"errors\": []\r\n      }\r\n    }\r\n\r\n**Sample error response (404 Not Found):**\r\n\r\n    {\r\n      \"success\": false,\r\n      \"message\": \"User with this email user@example.pl doesn't exist.\",\r\n      \"errors\": [ \"UserDoNotExist\" ]\r\n    }\r\n\r\n**Important Notes:**\r\n- Only users with the `Admin` role can access this endpoint.\r\n- The `email` parameter must correspond to a registered user.\r\n- The `newRole` parameter must be a valid existing role (`User` or `Admin`).",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "description": "Email of the user whose role will be changed.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "newRole",
+            "in": "query",
+            "description": "Target role to assign (`User` or `Admin`).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Role changed successfully"
+          },
+          "400": {
+            "description": "Invalid input data or missing parameters"
+          },
+          "401": {
+            "description": "Unauthorized - valid JWT token required"
+          },
+          "403": {
+            "description": "Forbidden - Admin role required"
+          },
+          "404": {
+            "description": "User or role not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/admin/user/lock-out": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Bans or suspends a user account with specified reason and duration",
+        "description": "Applies a temporary or permanent ban to a user account, preventing them from accessing the application.\r\nAutomatically deactivates any previous active bans, creates a new ban record, and sends a notification email to the affected user.\r\n\r\n**Features:**\r\n- Temporary ban (specify number of days) or permanent ban (omit days)\r\n- Automatic deactivation of previous active bans before applying new one\r\n- Email notification sent to banned user with ban details\r\n- Complete ban audit trail with admin information\r\n- Protection against banning admin accounts\r\n- After giving ban for user his report recor has been clear (status = Accepted)\r\n\r\n**Ban Types:**\r\n- **Temporary Ban**: Specify `days` parameter (e.g., 7, 30, 90)\r\n- **Permanent Ban**: Leave `days` as null or omit it\r\n\r\n**Sample Request (Temporary Ban):**\r\n\r\n    POST /api/admin/lock-out\r\n    {\r\n      \"email\": \"user@example.pl\",\r\n      \"reason\": \"Violation of Terms of Service - inappropriate content\",\r\n      \"days\": 7\r\n    }\r\n\r\n**Sample Request (Permanent Ban):**\r\n\r\n    POST /api/admin/lock-out\r\n    {\r\n      \"email\": \"user@example.pl\",\r\n      \"reason\": \"Severe violation - repeated offenses\",\r\n      \"days\": null\r\n    }\r\n\r\n**Sample Response (Success):**\r\n\r\n    {\r\n      \"success\": true,\r\n      \"message\": \"User banned successfully for 7 days\",\r\n      \"data\": {\r\n        \"succeeded\": true,\r\n        \"errors\": []\r\n      }\r\n    }\r\n\r\n**Sample Response (Permanent Ban Success):**\r\n\r\n    {\r\n      \"success\": true,\r\n      \"message\": \"User banned permanently\",\r\n      \"data\": {\r\n        \"succeeded\": true,\r\n        \"errors\": []\r\n      }\r\n    }",
+        "requestBody": {
+          "description": "Ban configuration (user email, reason, optional duration in days)",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetLockoutForUserRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetLockoutForUserRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetLockoutForUserRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User banned successfully (temporary or permanent)"
+          },
+          "400": {
+            "description": "Invalid request - email or reason missing"
+          },
+          "401": {
+            "description": "Unauthorized - valid JWT token required or admin email not found in claims"
+          },
+          "403": {
+            "description": "Forbidden - Cannot ban admin accounts or requesting user is not an admin"
+          },
+          "404": {
+            "description": "User not found or admin not found"
+          },
+          "500": {
+            "description": "Internal server error - failed to apply ban or create ban record"
+          }
+        }
+      }
+    },
+    "/api/admin/user/lock-out/review": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Retrieves detailed information about a user's active ban",
+        "description": "Returns comprehensive details about a user's current active ban status, including the reason, duration, and admin who issued the ban.\r\nOnly retrieves information for currently active bans - returns 404 if user is not banned or has no active ban records.\r\n\r\n**Features:**\r\n- View complete ban details for any user\r\n- Displays ban reason and justification\r\n- Shows ban duration (temporary or permanent)\r\n- Identifies admin who issued the ban\r\n- Provides timestamps for ban start and expiry\r\n\r\n**Sample Request:**\r\n\r\n    GET /api/admin/user/lock-out/review?email=user@example.pl\r\n\r\n**Sample Response (Active Ban - Temporary):**\r\n\r\n    {\r\n      \"success\": true,\r\n      \"message\": \"Ban information retrieved successfully.\",\r\n      \"data\": {\r\n        \"userName\": \"User2\",\r\n        \"reason\": \"Violation of Terms of Service - inappropriate content\",\r\n        \"bannedAt\": \"2025-11-07T22:08:57.51804Z\",\r\n        \"bannedUntil\": \"2025-11-14T22:08:57.518078Z\",\r\n        \"bannedBy\": \"Admin\"\r\n      }\r\n    }\r\n\r\n**Sample Response (Active Ban - Permanent):**\r\n\r\n    {\r\n      \"success\": true,\r\n      \"message\": \"Ban information retrieved successfully.\",\r\n      \"data\": {\r\n        \"userName\": \"User2\",\r\n        \"reason\": \"Severe violation - repeated offenses\",\r\n        \"bannedAt\": \"2025-11-07T22:08:57.51804Z\",\r\n        \"bannedUntil\": \"9999-12-31T23:59:59.9999999Z\",\r\n        \"bannedBy\": \"Admin\"\r\n      }\r\n    }\r\n\r\n**Sample Response (No Active Ban):**\r\n\r\n    {\r\n      \"success\": false,\r\n      \"message\": \"No ban information found for the user.\",\r\n      \"errors\": [\"NoBanInfoFound\"],\r\n      \"data\": null\r\n    }\r\n\r\n**Response Fields Explained:**\r\n- `userName` - Username of the banned user\r\n- `reason` - Detailed reason for the ban as provided by admin\r\n- `bannedAt` - UTC timestamp when ban was applied\r\n- `bannedUntil` - UTC timestamp when ban expires (or DateTime.MaxValue for permanent bans)\r\n- `bannedBy` - Username of the admin who issued the ban\r\n\r\n**Ban Type Identification:**\r\n- **Temporary Ban**: `bannedUntil` contains a realistic future date\r\n- **Permanent Ban**: `bannedUntil` is set to DateTime.MaxValue (9999-12-31T23:59:59.9999999Z)",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "description": "Email address of the user to check ban status (query parameter)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ban information retrieved successfully"
+          },
+          "401": {
+            "description": "Unauthorized - email parameter is missing or empty"
+          },
+          "404": {
+            "description": "No active ban found for the specified user"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/admin/user/unlock": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Unlocks a banned or suspended user account",
+        "description": "Removes an active ban from a user account, restoring their access to the application.\r\nAutomatically deactivates all active ban records, resets failed login attempts, and sends a notification email to the user.\r\n\r\n**Features:**\r\n- Removes temporary or permanent bans\r\n- Automatic deactivation of all active ban records with audit trail\r\n- Resets failed access attempt counter\r\n- Email notification sent to unbanned user\r\n- Complete unlock audit trail with admin information\r\n\r\n**Sample Request:**\r\n\r\n    POST /api/admin/unlock?userEmail=user@example.pl\r\n\r\n**Sample Response (Success):**\r\n\r\n    {\r\n      \"success\": true,\r\n      \"message\": \"User unlocked successfully\",\r\n      \"data\": {\r\n        \"succeeded\": true,\r\n        \"errors\": []\r\n      }\r\n    }\r\n\r\n**Sample Response (User Not Banned):**\r\n\r\n    {\r\n      \"success\": false,\r\n      \"message\": \"User is not locked out.\",\r\n      \"errors\": [\"UserNotLockedOut\"],\r\n      \"data\": null\r\n    }",
+        "parameters": [
+          {
+            "name": "userEmail",
+            "in": "query",
+            "description": "Email address of the user to unlock (query parameter)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User unlocked successfully"
+          },
+          "400": {
+            "description": "Invalid request - email missing or user is not currently locked out"
+          },
+          "401": {
+            "description": "Unauthorized - valid JWT token required or admin email not found in claims"
+          },
+          "403": {
+            "description": "Forbidden - Requesting user is not an admin (cannot unlock users) or attempting to unlock an admin account"
+          },
+          "404": {
+            "description": "User not found or admin not found"
+          },
+          "500": {
+            "description": "Internal server error - failed to unlock user or update ban records"
+          }
+        }
+      }
+    },
+    "/api/admin/user/report/list": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Retrieves a paginated list of pending user reports for a specific user",
+        "description": "Sample request:\r\n            \r\n    GET /api/report/list?email=user@example.com&PageNumber=1&PageSize=10\r\n            \r\nThis endpoint returns only reports with **\"Pending\"** status.\r\nReports are ordered by creation date (oldest first).\r\n\r\n**Query Parameters:**\r\n- `email` (required): Email of the reported user whose reports you want to retrieve\r\n- `PageNumber` (optional): Page number to retrieve (default: 1, minimum: 1)\r\n- `PageSize` (optional): Number of items per page (default: 10, minimum: 1)\r\n\r\n**Response Structure:**\r\n```json\r\n{\r\n  \"success\": true,\r\n  \"message\": \"User reports retrieved successfully\",\r\n  \"data\": {\r\n    \"items\": [\r\n      {\r\n        \"userName\": \"reportedUser123\",\r\n        \"userEmail\": \"reported@example.com\",\r\n        \"reason\": \"Spam or inappropriate content\",\r\n        \"status\": \"Pending\",\r\n        \"createdAt\": \"2025-11-08T10:30:00Z\"\r\n      }\r\n    ],\r\n    \"pageNumber\": 1,\r\n    \"pageSize\": 10,\r\n    \"totalCount\": 15,\r\n    \"totalPages\": 2,\r\n    \"hasPreviousPage\": false,\r\n    \"hasNextPage\": true\r\n  }\r\n}\r\n```\r\n\r\n**Error Response Example:**\r\n```json\r\n{\r\n  \"success\": false,\r\n  \"message\": \"Reported user not found\",\r\n  \"errors\": [\"NotFound\"],\r\n  \"data\": null\r\n}\r\n```\r\n\r\n**Notes:**\r\n- Only reports with \"Pending\" status are returned\r\n- If the requested page number exceeds total pages, the last page is returned automatically\r\n- An empty result (no reports) returns a 200 status with an empty items array",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "description": "Email address of the reported user",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "PageNumber",
+            "in": "query",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the paginated list of user reports or empty list if no reports found"
+          },
+          "400": {
+            "description": "If the email parameter is null or empty"
+          },
+          "404": {
+            "description": "If the user with the specified email is not found"
+          },
+          "500": {
+            "description": "If an internal server error occurs"
+          }
+        }
+      }
+    },
+    "/api/admin/user/report/change-status": {
+      "patch": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Changes the status of a user report (accept with ban or reject)",
+        "description": "Sample request for ACCEPTING a report (bans the user):\r\n            \r\n    PUT /api/admin/user/report/change-status\r\n    {\r\n      \"isAccepted\": true,\r\n      \"reportedUserEmail\": \"spammer@example.com\",\r\n      \"reportingUserEmail\": \"victim@example.com\",\r\n      \"reportCreatedAt\": \"2025-11-08T10:30:45.1234567Z\",\r\n      \"reason\": \"Multiple spam reports confirmed\",\r\n      \"days\": 7\r\n    }\r\n            \r\nSample request for REJECTING a report:\r\n            \r\n    PUT /api/admin/user/report/change-status\r\n    {\r\n      \"isAccepted\": false,\r\n      \"reportedUserEmail\": \"user@example.com\",\r\n      \"reportingUserEmail\": \"reporter@example.com\",\r\n      \"reportCreatedAt\": \"2025-11-08T10:30:45.1234567Z\"\r\n    }\r\n            \r\n**Request Body Fields:**\r\n\r\n- **`isAccepted`** (required, boolean):\r\n  - `true` = Accept the report and ban the user\r\n  - `false` = Reject the report (no action taken)\r\n\r\n- **`reportedUserEmail`** (required, string):\r\n  - Email address of the user who was reported\r\n  - Must be a valid email format\r\n\r\n- **`reportingUserEmail`** (required, string):\r\n  - Email address of the user who made the report\r\n  - Must be a valid email format\r\n\r\n- **`reportCreatedAt`** (required, datetime):\r\n  - Exact timestamp when the report was created\r\n  - Use the value from the report list endpoint\r\n  - Format: ISO 8601 (e.g., \"2025-11-08T10:30:45.1234567Z\")\r\n  - This field, combined with emails, uniquely identifies the report\r\n\r\n- **`reason`** (optional, string):\r\n  - Admin's reason for the ban\r\n  - **REQUIRED when `isAccepted` is `true`**\r\n  - Ignored when `isAccepted` is `false`\r\n  - This will be included in the ban notification email sent to the user\r\n\r\n- **`days`** (optional, integer):\r\n  - Duration of the ban in days\r\n  - Only applies when `isAccepted` is `true`\r\n  - `null` or not provided = permanent ban\r\n  - Positive number (e.g., 7) = temporary ban for that many days\r\n  - Ignored when `isAccepted` is `false`\r\n\r\n---\r\n\r\n**When accepting (isAccepted: true):**\r\n- ALL pending reports for the reported user automatically become \"Accepted\"\r\n- Creates a ban record in the database\r\n- Locks out the user's account (sets LockoutEnd in Identity)\r\n- Sends a ban notification email to the reported user\r\n- The `reason` field is **REQUIRED** - validation will fail without it\r\n- All accepted reports will be linked to the created ban record\r\n\r\n**When rejecting (isAccepted: false):**\r\n- Only THIS specific report's status changes to \"Rejected\"\r\n- Other pending reports for the same user remain unchanged\r\n- No ban is created\r\n- User account remains active\r\n- The `reason` and `days` fields are ignored\r\n\r\n**Notes:**\r\n- The combination of `reportedUserEmail`, `reportingUserEmail`, and `reportCreatedAt` uniquely identifies a specific report\r\n- Only reports with \"Pending\" status can be processed\r\n- Attempting to process an already reviewed report will return a 400 error\r\n- Only users with the \"Admin\" role can use this endpoint",
+        "requestBody": {
+          "description": "Report status change details",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeReportStatusRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeReportStatusRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeReportStatusRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Report status changed successfully"
+          },
+          "400": {
+            "description": "If validation fails or required fields are missing"
+          },
+          "403": {
+            "description": "If the user is not an admin"
+          },
+          "404": {
+            "description": "If report, user, or admin not found"
+          },
+          "500": {
+            "description": "If an internal server error occurs"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AddFuelTypeAndPriceRequest": {
+        "required": [
+          "code",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "code": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "price": {
+            "minimum": 0.01,
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "AddFuelTypeRequest": {
+        "required": [
+          "code",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "code": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "AddStationRequest": {
+        "required": [
+          "brandName",
+          "city",
+          "houseNumber",
+          "latitude",
+          "longitude",
+          "postalCode",
+          "street"
+        ],
+        "type": "object",
+        "properties": {
+          "brandName": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "street": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "houseNumber": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "city": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "postalCode": {
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9 -]{3,10}$",
+            "type": "string"
+          },
+          "latitude": {
+            "maximum": 90,
+            "minimum": -90,
+            "type": "number",
+            "format": "double"
+          },
+          "longitude": {
+            "maximum": 180,
+            "minimum": -180,
+            "type": "number",
+            "format": "double"
+          },
+          "fuelTypes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AddFuelTypeAndPriceRequest"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ChangePasswordRequest": {
+        "required": [
+          "confirmNewPassword",
+          "newPassword"
+        ],
+        "type": "object",
+        "properties": {
+          "currentPassword": {
+            "type": "string",
+            "nullable": true
+          },
+          "newPassword": {
+            "maxLength": 100,
+            "minLength": 6,
+            "pattern": "^(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*(),.?\"{}|<>]).+$",
+            "type": "string"
+          },
+          "confirmNewPassword": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ChangeReportStatusRequest": {
+        "required": [
+          "isAccepted",
+          "reportCreatedAt",
+          "reportedUserEmail",
+          "reportingUserEmail"
+        ],
+        "type": "object",
+        "properties": {
+          "isAccepted": {
+            "type": "boolean"
+          },
+          "reportedUserEmail": {
+            "minLength": 1,
+            "type": "string",
+            "format": "email"
+          },
+          "reportingUserEmail": {
+            "minLength": 1,
+            "type": "string",
+            "format": "email"
+          },
+          "reportCreatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "reason": {
+            "type": "string",
+            "nullable": true
+          },
+          "days": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ConfirmEmailRequest": {
+        "required": [
+          "email",
+          "token"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "minLength": 1,
+            "type": "string",
+            "format": "email"
+          },
+          "token": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "DeleteAccountRequest": {
+        "required": [
+          "confirmPassword"
+        ],
+        "type": "object",
+        "properties": {
+          "password": {
+            "type": "string",
+            "nullable": true
+          },
+          "confirmPassword": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "EditFuelTypeRequest": {
+        "required": [
+          "oldCode"
+        ],
+        "type": "object",
+        "properties": {
+          "oldCode": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "newName": {
+            "type": "string",
+            "nullable": true
+          },
+          "newCode": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "EditStationRequest": {
+        "type": "object",
+        "properties": {
+          "findStation": {
+            "$ref": "#/components/schemas/FindStationRequest"
+          },
+          "newBrandName": {
+            "type": "string",
+            "nullable": true
+          },
+          "newStreet": {
+            "type": "string",
+            "nullable": true
+          },
+          "newHouseNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "newCity": {
+            "type": "string",
+            "nullable": true
+          },
+          "newPostalCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "newLatitude": {
+            "maximum": 90,
+            "minimum": -90,
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "newLongitude": {
+            "maximum": 180,
+            "minimum": -180,
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "fuelType": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AddFuelTypeAndPriceRequest"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "FacebookTokenRequest": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "FindStationRequest": {
+        "required": [
+          "brandName",
+          "city",
+          "houseNumber",
+          "street"
+        ],
+        "type": "object",
+        "properties": {
+          "brandName": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "street": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "houseNumber": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "city": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetPaggedRequest": {
+        "type": "object",
+        "properties": {
+          "pageNumber": {
+            "maximum": 2147483647,
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "pageSize": {
+            "maximum": 2147483647,
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetStationListRequest": {
+        "type": "object",
+        "properties": {
+          "locationLatitude": {
+            "maximum": 90,
+            "minimum": -90,
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "locationLongitude": {
+            "maximum": 180,
+            "minimum": -180,
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "distance": {
+            "minimum": 0,
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "fuelType": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "minPrice": {
+            "minimum": 0,
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "maxPrice": {
+            "minimum": 0,
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "priceUpdatedAfter": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "priceUpdatedBefore": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "brandName": {
+            "type": "string",
+            "nullable": true
+          },
+          "sortingByDisance": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "sortingByPrice": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "sortingDirection": {
+            "pattern": "^(asc|desc)$",
+            "type": "string",
+            "nullable": true
+          },
+          "pagging": {
+            "$ref": "#/components/schemas/GetPaggedRequest"
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetStationsRequest": {
+        "type": "object",
+        "properties": {
+          "brandName": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "locationLatitude": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "locationLongitude": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "distance": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GoogleTokenRequest": {
+        "type": "object",
+        "properties": {
+          "idToken": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "LoginRequest": {
+        "required": [
+          "email",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "minLength": 1,
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ManageStationFuelPriceRequest": {
+        "required": [
+          "code",
+          "price"
+        ],
+        "type": "object",
+        "properties": {
+          "station": {
+            "$ref": "#/components/schemas/FindStationRequest"
+          },
+          "code": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "price": {
+            "minimum": 0.01,
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RegisterNewUserRequest": {
+        "required": [
+          "confirmPassword",
+          "email",
+          "password",
+          "userName"
+        ],
+        "type": "object",
+        "properties": {
+          "userName": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "email": {
+            "minLength": 1,
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "maxLength": 100,
+            "minLength": 6,
+            "pattern": "^(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*(),.?\"{}|<>]).+$",
+            "type": "string"
+          },
+          "confirmPassword": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ReportRequest": {
+        "required": [
+          "reason",
+          "reportedUserName"
+        ],
+        "type": "object",
+        "properties": {
+          "reportedUserName": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "reason": {
+            "maxLength": 1000,
+            "minLength": 4,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ResetPasswordRequest": {
+        "required": [
+          "confirmPassword",
+          "email",
+          "password",
+          "token"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "minLength": 1,
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "maxLength": 100,
+            "minLength": 6,
+            "pattern": "^(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*(),.?\"{}|<>]).+$",
+            "type": "string"
+          },
+          "confirmPassword": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "token": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SetLockoutForUserRequest": {
+        "required": [
+          "email",
+          "reason"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "minLength": 1,
+            "type": "string",
+            "format": "email"
+          },
+          "days": {
+            "maximum": 3650,
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "reason": {
+            "maxLength": 500,
+            "minLength": 10,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "description": "JWT Authorization header using the Bearer scheme.",
+        "scheme": "Bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "Bearer": [ ]
+    }
+  ]
+}
