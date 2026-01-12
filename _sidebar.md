@@ -19,6 +19,7 @@
   - [ADR-007](./adr/adr-07.md)
   - [ADR-008](./adr/adr-08.md)
   - [ADR-009](./adr/adr-09.md)
+  - [ADR-010](./adr/adr-10.md)
 
 - **Event Storming**
 

@@ -1,6 +1,6 @@
 # ADR-008: Wybór serwera do deployu
 
-- **Status:** Zaakceptowana
+- **Status:** Zmienione
 - **Data:** 2025-10-06
 - **Autorzy:** Mateusz Bogacz-Drewniak, Paweł Kruk
 

@@ -1,6 +1,6 @@
 # ADR-009: Wybór usługi do wysyłki maili
 
-- **Status:** Proponowana
+- **Status:** Zaakceptowane
 - **Data:** 2025-12-20
 - **Autorzy:** Mateusz Bogacz-Drewniak, Paweł Kruk, Szymon Mikołajek, Michał Nocuń
 
